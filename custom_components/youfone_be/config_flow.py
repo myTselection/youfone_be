@@ -22,13 +22,9 @@ def create_schema(entry, option=False):
         # We use .get here incase some of the texts gets changed.
         default_username = entry.data.get("username", "")
         default_password = entry.data.get("password", "")
-        default_internet = entry.data.get("internet", True)
-        default_mobile = entry.data.get("mobile", True)
     else:
         default_username = ""
         default_password = ""
-        default_internet = True
-        default_mobile = True
 
     data_schema = OrderedDict()
     data_schema[
@@ -37,12 +33,6 @@ def create_schema(entry, option=False):
     data_schema[
         vol.Optional("password", default=default_password, description="password")
     ] = str
-    data_schema[
-        vol.Optional("internet", default=default_internet, description="Track internet usage?")
-    ] = bool
-    data_schema[
-        vol.Optional("mobile", default=default_mobile, description="Track mobile usage?")
-    ] = bool
 
     return data_schema
 
@@ -73,19 +63,6 @@ class Mixin:
         else:
             self._errors["base"] = "missing password"
             
-        internet = None
-
-        if user_input.get("internet"):
-            internet = user_input.get("internet")
-        else:
-            self._errors["base"] = "missing internet"
-            
-        mobile = None
-
-        if user_input.get("mobile"):
-            mobile = user_input.get("mobile")
-        else:
-            self._errors["base"] = "missing mobile"
 
 
 class ComponentFlowHandler(Mixin, config_entries.ConfigFlow, domain=DOMAIN):
