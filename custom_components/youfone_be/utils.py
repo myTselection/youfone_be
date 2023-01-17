@@ -56,7 +56,7 @@ class ComponentSession(object):
         # "Login": "sdlkfjsldkfj@gmail.com",
         # "Password": "SDFSDFSDFSDFSDF"
       # }
-    }
+    # }
     # example response: 
     # {"Message":"Authorization succes","ResultCode":0,"Object":{"Customer":{"CustomerNumber":9223283432,"Email":"eslkdjflksd@gmail.com","FirstName":"slfjs","Gender":null,"Id":3434,"Initials":"I","IsBusinessCustomer":false,"Language":"nl","LastName":"DSFSDF","PhoneNumber":"0412345678","Prefix":null,"RoleId":2},"Customers":[{"CustomerId":12345,"CustomerNumber":1234567890,"IsDefaultCustomer":true,"Msisdn":32412345678,"ProvisioningTypeId":1,"RoleId":2}],"CustomersCount":1}}
         # Get OAuth2 state / nonce
