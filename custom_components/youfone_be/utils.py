@@ -62,7 +62,7 @@ class ComponentSession(object):
         # Get OAuth2 state / nonce
         header = {"Content-Type": "application/json"}
         response = self.s.post("https://my.youfone.be/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/login",data='{"Login": "'+username+'","Password": "'+password+'"}',headers=header,timeout=10)
-        _LOGGER.debug("youfone.be login post result status code: " + str(response.status_code))
+        _LOGGER.info("youfone.be login post result status code: " + str(response.status_code) + ", response: " + response.text)
         assert response.status_code == 200
         self.userdetails = response.json()
         self.msisdn = self.userdetails.Object.Customers[0].Msisdn
@@ -74,8 +74,8 @@ class ComponentSession(object):
     # {"Message":null,"ResultCode":0,"Object":[{"Properties":[{"Key":"UsedAmount","Value":"0"},{"Key":"BundleDurationWithUnits","Value":"250 MB"},{"Key":"Percentage","Value":"0.00"},{"Key":"_isUnlimited","Value":"0"},{"Key":"_isExtraMbsAvailable","Value":"1"}],"SectionId":1},{"Properties":[{"Key":"UsedAmount","Value":"24"},{"Key":"BundleDurationWithUnits","Value":"200 Min"},{"Key":"Percentage","Value":"12.00"},{"Key":"_isUnlimited","Value":"0"}],"SectionId":2},{"Properties":[{"Key":"StartDate","Value":"1 februari 2023"},{"Key":"NumberOfRemainingDays","Value":"16"}],"SectionId":3},{"Properties":[{"Key":"UsedAmount","Value":"0.00"}],"SectionId":4}]}
         header = {"Content-Type": "application/json"}
         response = self.s.get("https://my.youfone.be/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/GetOverviewMsisdnInfo",data='{"Msisdn": "'+self.msisdn+'"}',headers=header,timeout=10)
-        _LOGGER.debug("youfone.be  result status code: " + str(response.status_code))
-        _LOGGER.debug("youfone.be  result " + response.text)
+        _LOGGER.info("youfone.be  result status code: " + str(response.status_code))
+        _LOGGER.info("youfone.be  result " + response.text)
         assert response.status_code == 200
         # return next(Telemeter.from_json(response.json()))
         return response.json()

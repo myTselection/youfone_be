@@ -135,6 +135,7 @@ class ComponentMobileSensor(Entity):
         self._isunlimited = None
         self._extracosts = None
         self._used_percentage = None
+        self._phonenumber = self._data._user_details.Object.PhoneNumber
 
     @property
     def state(self):
@@ -182,6 +183,7 @@ class ComponentMobileSensor(Entity):
         return {
             ATTR_ATTRIBUTION: NAME,
             "last update": self._last_update,
+            "phone_number": self._phonenumber,
             "used_percentage": self._used_percentage,
             "total_volume": self._total_volume,
             "unlimited": self._isunlimited,
