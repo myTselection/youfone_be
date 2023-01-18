@@ -45,7 +45,7 @@ async def dry_setup(hass, config_entry, async_add_devices):
     assert componentData._usage_details is not None
     
     sensorMobile = ComponentMobileSensor(componentData, hass)
-    sensors.append(sensorData)
+    sensors.append(sensorMobile)
     
     sensorInternet = ComponentInternetSensor(componentData, hass)
     sensors.append(sensorInternet)
@@ -101,7 +101,7 @@ class ComponentData:
             _LOGGER.info(f"{NAME} init login completed")
             self._usage_details = await self._hass.async_add_executor_job(lambda: self._session.usage_details())
             _LOGGER.debug(f"{NAME} init usage_details data: {self._usage_details}")
-            self._lastupdate = now()
+            self._lastupdate = datetime.now()
                 
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
     async def _update(self):
@@ -114,7 +114,7 @@ class ComponentData:
             _LOGGER.info(f"{NAME} init login completed")
             self._usage_details = await self._hass.async_add_executor_job(lambda: self._session.usage_details())
             _LOGGER.debug(f"{NAME} init usage_details data: {self._usage_details}")
-            self._lastupdate = now()
+            self._lastupdate = datetime.now()
 
     async def update(self):
         await self._update()
@@ -135,7 +135,8 @@ class ComponentMobileSensor(Entity):
         self._isunlimited = None
         self._extracosts = None
         self._used_percentage = None
-        self._phonenumber = self._data._user_details.Object.PhoneNumber
+        self._phonenumber = self._data._user_details.get('Object').get('PhoneNumber')
+        self._includedvolume_usage = None
 
     @property
     def state(self):
@@ -145,14 +146,16 @@ class ComponentMobileSensor(Entity):
     async def async_update(self):
         await self._data.update()
         self._last_update =  self._data._lastupdate;
+        self._phonenumber = self._data._user_details.get('Object').get('PhoneNumber')
         
-        self._period_start_date = self._data._usage_details.Object[2].Properties[0].Value
-        self._period_left = self._data._usage_details.Object[2].Properties[1].Value
+        self._period_start_date = self._data._usage_details.get('Object')[2].get('Properties')[0].get('Value')
+        self._period_left = self._data._usage_details.get('Object')[2].get('Properties')[1].get('Value')
         
-        self._total_volume = self._data._usage_details.Object[1].Properties[1].Value
-        self._used_percentage = self._data._usage_details.Object[1].Properties[2].Value
-        self._isunlimited = self._data._usage_details.Object[1].Properties[3].Value
-        self._extracosts = self._data._usage_details.Object[3].Properties[0].Value
+        self._includedvolume_usage = self._data._usage_details.get('Object')[1].get('Properties')[0].get('Value')
+        self._total_volume = self._data._usage_details.get('Object')[1].get('Properties')[1].get('Value')
+        self._used_percentage = self._data._usage_details.get('Object')[1].get('Properties')[2].get('Value')
+        self._isunlimited = self._data._usage_details.get('Object')[1].get('Properties')[3].get('Value')
+        self._extracosts = self._data._usage_details.get('Object')[3].get('Properties')[0].get('Value')
             
         
     async def async_will_remove_from_hass(self):
@@ -186,11 +189,13 @@ class ComponentMobileSensor(Entity):
             "phone_number": self._phonenumber,
             "used_percentage": self._used_percentage,
             "total_volume": self._total_volume,
+            "includedvolume_usage": self._includedvolume_usage,
             "unlimited": self._isunlimited,
             "period_start": self._period_start_date,
             "period_days_left": self._period_left,
             "extra_costs": self._extracosts,
-            "usage_details_json": self._data._usage_details
+            "usage_details_json": self._data._usage_details,
+            "user_details_json": self._data._user_details
         }
 
     @property
@@ -227,6 +232,8 @@ class ComponentInternetSensor(Entity):
         self._total_volume = None
         self._isunlimited = None
         self._used_percentage = None
+        self._phonenumber = self._data._user_details.get('Object').get('PhoneNumber')
+        self._includedvolume_usage = None
 
     @property
     def state(self):
@@ -236,13 +243,15 @@ class ComponentInternetSensor(Entity):
     async def async_update(self):
         await self._data.update()
         self._last_update =  self._data._lastupdate;
+        self._phonenumber = self._data._user_details.get('Object').get('PhoneNumber')
         
-        self._period_start_date = self._data._usage_details.Object[2].Properties[0].Value
-        self._period_left = self._data._usage_details.Object[2].Properties[1].Value
+        self._period_start_date = self._data._usage_details.get('Object')[2].get('Properties')[0].get('Value')
+        self._period_left = self._data._usage_details.get('Object')[2].get('Properties')[1].get('Value')
         
-        self._total_volume = self._data._usage_details.Object[0].Properties[1].Value
-        self._used_percentage = self._data._usage_details.Object[0].Properties[2].Value
-        self._isunlimited = self._data._usage_details.Object[0].Properties[3].Value
+        self._includedvolume_usage = self._data._usage_details.get('Object')[0].get('Properties')[0].get('Value')
+        self._total_volume = self._data._usage_details.get('Object')[0].get('Properties')[1].get('Value')
+        self._used_percentage = self._data._usage_details.get('Object')[0].get('Properties')[2].get('Value')
+        self._isunlimited = self._data._usage_details.get('Object')[0].get('Properties')[3].get('Value')
             
         
     async def async_will_remove_from_hass(self):
@@ -273,8 +282,10 @@ class ComponentInternetSensor(Entity):
         return {
             ATTR_ATTRIBUTION: NAME,
             "last update": self._last_update,
+            "phone_number": self._phonenumber,
             "used_percentage": self._used_percentage,
             "total_volume": self._total_volume,
+            "includedvolume_usage": self._includedvolume_usage,
             "unlimited": self._isunlimited,
             "period_start": self._period_start_date,
             "period_days_left": self._period_left,
