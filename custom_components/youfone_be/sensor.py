@@ -135,7 +135,7 @@ class ComponentMobileSensor(Entity):
         self._isunlimited = None
         self._extracosts = None
         self._used_percentage = None
-        self._phonenumber = self._data._user_details.get('Object').get('PhoneNumber')
+        self._phonenumber = None
         self._includedvolume_usage = None
 
     @property
@@ -146,8 +146,8 @@ class ComponentMobileSensor(Entity):
     async def async_update(self):
         await self._data.update()
         self._last_update =  self._data._lastupdate;
-        self._phonenumber = self._data._user_details.get('Object').get('PhoneNumber')
         
+        self._phonenumber = self._data._user_details.get('Object').get('Customer').get('PhoneNumber')
         self._period_start_date = self._data._usage_details.get('Object')[2].get('Properties')[0].get('Value')
         self._period_left = self._data._usage_details.get('Object')[2].get('Properties')[1].get('Value')
         
@@ -232,7 +232,7 @@ class ComponentInternetSensor(Entity):
         self._total_volume = None
         self._isunlimited = None
         self._used_percentage = None
-        self._phonenumber = self._data._user_details.get('Object').get('PhoneNumber')
+        self._phonenumber = None
         self._includedvolume_usage = None
 
     @property
@@ -243,7 +243,7 @@ class ComponentInternetSensor(Entity):
     async def async_update(self):
         await self._data.update()
         self._last_update =  self._data._lastupdate;
-        self._phonenumber = self._data._user_details.get('Object').get('PhoneNumber')
+        self._phonenumber = self._data._user_details.get('Object').get('Customer').get('PhoneNumber')
         
         self._period_start_date = self._data._usage_details.get('Object')[2].get('Properties')[0].get('Value')
         self._period_left = self._data._usage_details.get('Object')[2].get('Properties')[1].get('Value')
