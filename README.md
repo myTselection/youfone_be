@@ -62,6 +62,11 @@ cards:
     name: ''
     severity:
       green: 0
+  - type: history-graph
+    entities:
+      - entity: sensor.youfone_be_call_sms
+    hours_to_show: 500
+    refresh_interval: 60
 
 ```
 
