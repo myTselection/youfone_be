@@ -65,3 +65,4 @@ cards:
 
 ```
 
+<p align="center"><img src="https://raw.githubusercontent.com/myTselection/youfone_be/master/Markdown%20Gauge%20Card%20example.png"/></p>
