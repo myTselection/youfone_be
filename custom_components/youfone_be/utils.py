@@ -19,23 +19,11 @@ def check_settings(config, hass):
         _LOGGER.error("username was not set")
     else:
         return True
+        
     if not config.get("password"):
         _LOGGER.error("password was not set")
     else:
         return True
-    if not config.get("data"):
-        _LOGGER.error("data bool was not set")
-    else:
-        return True
-    if not config.get("mobile"):
-        _LOGGER.error("mobile bool was not set")
-    else:
-        return True
-        
-    if config.get("data") and config.get("mobile"):
-        return True
-    else:
-        _LOGGER.error("At least one of data or mobile is to be set")
 
     raise vol.Invalid("Missing settings to setup the sensor.")
 
