@@ -3,7 +3,7 @@
 # Youfone.be (Beta)
 [Youfone.be](https://www.youfone.be/) Home Assistant custom component
 
-<!-- <p align="center"><img src="https://github.com/myTselection/youfone_be/blob/master/logo.png"/></p> -->
+<p align="center"><img src="https://raw.githubusercontent.com/myTselection/youfone_be/master/icon.png"/></p>
 
 
 ## Installation
