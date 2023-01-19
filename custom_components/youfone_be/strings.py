@@ -9,7 +9,6 @@
                     "username": "Username",
                     "password": "Password"
                 }
-                }
             },
             "edit": {
                 "title": "Youfone.be",
@@ -17,7 +16,6 @@
                 "data": {
                     "username": "Username",
                     "password": "Password"
-                }
                 }
             }
 
@@ -37,7 +35,6 @@
                 "data": {
                     "username": "Username",
                     "password": "Password"
-                }
                 }
             }
         },
