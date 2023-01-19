@@ -29,14 +29,32 @@ All other files just contain boilerplat code for the integration to work wtihin 
 type: vertical-stack
 cards:
   - type: markdown
-    content: >
-      <img src="https://raw.githubusercontent.com/myTselection/youfone_be/master/logo.png" width="30"/>  **Youfone.be**
-      ### Total used:
-      {{state_attr('sensor.youfone_be_phone','used_percentage')}}%
-	  
-	  TODO
+    content: >-
+      ## Youfone {{state_attr('sensor.youfone_be_call_sms','phone_number')}}
+
+
+      ### Total call/sms usage: {{states('sensor.youfone_be_call_sms')}}%
+      ({{state_attr('sensor.youfone_be_call_sms','includedvolume_usage')}} of
+      {{state_attr('sensor.youfone_be_call_sms','total_volume')}})
+
+      ### Total data usage: {{states('sensor.youfone_be_internet')}}%
+      ({{state_attr('sensor.youfone_be_internet','includedvolume_usage')}} of
+      {{state_attr('sensor.youfone_be_internet','total_volume')}})
+
+      #### {{state_attr('sensor.youfone_be_call_sms','period_days_left')|int}}
+      days reamaining
+      ({{((state_attr('sensor.youfone_be_call_sms','total_volume')|replace('
+      Min','')) or 0)|int -
+      (state_attr('sensor.youfone_be_call_sms','includedvolume_usage') or
+      0)|int}} Min)
+
+
+
+      latst update: *{{state_attr('sensor.youfone_be_call_sms','last update')
+      | as_timestamp | timestamp_custom("%d-%m-%Y")}}*
+       
   - type: gauge
-    entity: sensor.youfone_be_phone
+    entity: sensor.youfone_be_call_sms
     max: 100
     min: 0
     needle: true
@@ -44,7 +62,6 @@ cards:
     name: ''
     severity:
       green: 0
-      yellow: 60
-      red: 80
+
 ```
 
