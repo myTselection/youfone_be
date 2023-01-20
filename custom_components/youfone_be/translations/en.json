@@ -3,7 +3,6 @@
         "title": "Youfone.be",
         "step": {
             "user": {
-                "title": "Youfone.be",
                 "description": "Setup a Youfone.be sensor, username and password are required.",
                 "data": {
                     "username": "Username",
