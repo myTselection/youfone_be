@@ -1,6 +1,6 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 
-# Youfone.be (Beta)
+# Youfone.be
 [Youfone.be](https://www.youfone.be/) Home Assistant custom component. This custom component has been built from the ground up to bring your Youfone mobile phone usage details into Home Assistant to help you towards a better follow up on your usage information. This integration is built against the public website provided by Youfone Belgium and has not been tested for any other countries.
 
 This integration is in no way affiliated with Youfone Belgium.
