@@ -54,12 +54,8 @@ type: vertical-stack
       Min','')) or 0)|int -
       (state_attr('sensor.youfone_be_call_sms','includedvolume_usage') or
       0)|int}} Min)
-
-
-
       laatste update: *{{state_attr('sensor.youfone_be_call_sms','last update')
       | as_timestamp | timestamp_custom("%d-%m-%Y")}}*
-       
   - type: custom:dual-gauge-card
     title: false
     min: 0
