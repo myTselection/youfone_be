@@ -31,7 +31,6 @@ All other files just contain boilerplat code for the integration to work wtihin 
 ### Gauge & Markdown
 ```
 type: vertical-stack
-cards:
   - type: markdown
     content: >-
       ## <img
@@ -66,6 +65,39 @@ cards:
     max: 100
     shadeInner: true
     cardwidth: 350
+    outer:
+      entity: sensor.youfone_be_call_sms
+      attribute: used_percentage
+      label: used
+      min: 0
+      max: 100
+      unit: '%'
+      colors:
+        - color: var(--label-badge-green)
+          value: 0
+        - color: var(--label-badge-yellow)
+          value: 60
+        - color: var(--label-badge-red)
+          value: 80
+    inner:
+      entity: sensor.youfone_be_call_sms
+      label: period
+      attribute: period_used_percentage
+      min: 0
+      max: 100
+      unit: '%'
+      colors:
+        - color: var(--label-badge-green)
+          value: 0
+        - color: var(--label-badge-yellow)
+          value: 60
+        - color: var(--label-badge-red)
+          value: 80
+  - type: history-graph
+    entities:
+      - entity: sensor.youfone_be_call_sms
+    hours_to_show: 500
+    refresh_interval: 60
 ```
 
 <p align="center"><img src="https://raw.githubusercontent.com/myTselection/youfone_be/master/Markdown%20Gauge%20Card%20example.png"/></p>
