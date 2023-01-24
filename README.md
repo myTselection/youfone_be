@@ -27,26 +27,29 @@ The main logic and API connection related code can be found within source code y
 
 All other files just contain boilerplat code for the integration to work wtihin HA or to have some constants/strings/translations.
 
-## Example usage:
+## Example usage: (using [dual gauge card](https://github.com/custom-cards/dual-gauge-card))
 ### Gauge & Markdown
 ```
 type: vertical-stack
 cards:
   - type: markdown
     content: >-
-      ## Youfone {{state_attr('sensor.youfone_be_call_sms','phone_number')}}
+      ## <img
+      src="https://raw.githubusercontent.com/myTselection/youfone_be/master/icon.png"
+      width="30"/>&nbsp;&nbsp;Youfone
+      {{state_attr('sensor.youfone_be_call_sms','phone_number')}}
 
 
-      ### Total call/sms usage: {{states('sensor.youfone_be_call_sms')}}%
-      ({{state_attr('sensor.youfone_be_call_sms','includedvolume_usage')}} of
+      ### Totaal bel/sms verbruikt: {{states('sensor.youfone_be_call_sms')}}%
+      ({{state_attr('sensor.youfone_be_call_sms','includedvolume_usage')}} van
       {{state_attr('sensor.youfone_be_call_sms','total_volume')}})
 
-      ### Total data usage: {{states('sensor.youfone_be_internet')}}%
-      ({{state_attr('sensor.youfone_be_internet','includedvolume_usage')}} of
+      ### Totaal data verbruikt: {{states('sensor.youfone_be_internet')}}%
+      ({{state_attr('sensor.youfone_be_internet','includedvolume_usage')}} van
       {{state_attr('sensor.youfone_be_internet','total_volume')}})
 
       #### {{state_attr('sensor.youfone_be_call_sms','period_days_left')|int}}
-      days reamaining
+      dagen resterend
       ({{((state_attr('sensor.youfone_be_call_sms','total_volume')|replace('
       Min','')) or 0)|int -
       (state_attr('sensor.youfone_be_call_sms','includedvolume_usage') or
@@ -54,24 +57,15 @@ cards:
 
 
 
-      latst update: *{{state_attr('sensor.youfone_be_call_sms','last update')
+      laatste update: *{{state_attr('sensor.youfone_be_call_sms','last update')
       | as_timestamp | timestamp_custom("%d-%m-%Y")}}*
        
-  - type: gauge
-    entity: sensor.youfone_be_call_sms
-    max: 100
+  - type: custom:dual-gauge-card
+    title: false
     min: 0
-    needle: true
-    unit: '%'
-    name: ''
-    severity:
-      green: 0
-  - type: history-graph
-    entities:
-      - entity: sensor.youfone_be_call_sms
-    hours_to_show: 500
-    refresh_interval: 60
-
+    max: 100
+    shadeInner: true
+    cardwidth: 350
 ```
 
 <p align="center"><img src="https://raw.githubusercontent.com/myTselection/youfone_be/master/Markdown%20Gauge%20Card%20example.png"/></p>
