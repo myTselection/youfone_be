@@ -30,6 +30,7 @@ All other files just contain boilerplat code for the integration to work wtihin 
 ## Example usage: (using [dual gauge card](https://github.com/custom-cards/dual-gauge-card))
 ### Gauge & Markdown
 <p align="center"><img src="https://raw.githubusercontent.com/myTselection/youfone_be/master/Markdown%20Gauge%20Card%20example.png"/></p>
+
 ```
 type: vertical-stack
   - type: markdown
