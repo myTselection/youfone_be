@@ -167,7 +167,11 @@ class ComponentMobileSensor(Entity):
         self._total_volume = self._data._usage_details.get('Object')[1].get('Properties')[1].get('Value')
         self._used_percentage = round(float(self._data._usage_details.get('Object')[1].get('Properties')[2].get('Value')),1)
         self._isunlimited = self._data._usage_details.get('Object')[1].get('Properties')[3].get('Value')
-        self._extracosts = self._data._usage_details.get('Object')[3].get('Properties')[0].get('Value')
+        try:
+            self._extracosts = self._data._usage_details.get('Object')[3].get('Properties')[0].get('Value')
+        except IndexError: 
+            self._extracosts = 0
+            
             
         
     async def async_will_remove_from_hass(self):
