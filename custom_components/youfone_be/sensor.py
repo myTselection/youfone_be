@@ -149,7 +149,7 @@ class ComponentMobileSensor(Entity):
         await self._data.update()
         self._last_update =  self._data._lastupdate;
         
-        self._phonenumber = self._data._user_details.get('Object').get('Customer').get('PhoneNumber')
+        self._phonenumber = self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')
         self._period_start_date = self._data._usage_details.get('Object')[2].get('Properties')[0].get('Value')
         self._period_left = int(self._data._usage_details.get('Object')[2].get('Properties')[1].get('Value'))
         # date_string = self._period_start_date
