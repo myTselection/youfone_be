@@ -69,3 +69,18 @@ class ComponentSession(object):
         assert response.status_code == 200
         return response.json()
         
+    def subscription_details(self):
+        header = {"Content-Type": "application/json"}
+        response = self.s.get("https://my.youfone.be/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/GetAbonnementMsisdnInfo",data='{"request": {"Msisdn": '+str(self.msisdn)+'}}',headers=header,timeout=10)
+        self.s.headers["securitykey"] = response.headers.get('securitykey')
+        _LOGGER.debug("youfone.be  result status code: " + str(response.status_code) + ", msisdn" + str(self.msisdn))
+        _LOGGER.debug("youfone.be  result " + response.text)
+        assert response.status_code == 200
+        jresponse = response.json()
+        assert jresponse["ResultCode"] == 0
+        obj = {}
+        for section in jresponse["Object"]:
+            obj[section["SectionId"]] = {}
+            for prop in section["Properties"]:
+                obj[section["SectionId"]][prop["Key"]] = prop["Value"]
+        return obj

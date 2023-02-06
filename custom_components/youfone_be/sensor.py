@@ -50,6 +50,9 @@ async def dry_setup(hass, config_entry, async_add_devices):
     
     sensorInternet = ComponentInternetSensor(componentData, hass)
     sensors.append(sensorInternet)
+
+    sensorSubscription = ComponentSubscriptionSensor(componentData, hass)
+    sensors.append(sensorSubscription)
     
     async_add_devices(sensors)
 
@@ -87,6 +90,7 @@ class ComponentData:
         self._client = client
         self._session = ComponentSession()
         self._usage_details = None
+        self._subscription_details = None
         self._hass = hass
         self._lastupdate = None
         self._user_details = None
@@ -102,6 +106,8 @@ class ComponentData:
             _LOGGER.info(f"{NAME} init login completed")
             self._usage_details = await self._hass.async_add_executor_job(lambda: self._session.usage_details())
             _LOGGER.debug(f"{NAME} init usage_details data: {self._usage_details}")
+            self._subscription_details = await self._hass.async_add_executor_job(lambda: self._session.subscription_details())
+            _LOGGER.debug(f"{NAME} init usage_details data: {self._subscription_details}")
             self._lastupdate = datetime.now()
                 
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
@@ -115,6 +121,8 @@ class ComponentData:
             _LOGGER.info(f"{NAME} init login completed")
             self._usage_details = await self._hass.async_add_executor_job(lambda: self._session.usage_details())
             _LOGGER.debug(f"{NAME} init usage_details data: {self._usage_details}")
+            self._subscription_details = await self._hass.async_add_executor_job(lambda: self._session.subscription_details())
+            _LOGGER.debug(f"{NAME} init subscription_details data: {self._usage_details}")
             self._lastupdate = datetime.now()
 
     async def update(self):
@@ -212,7 +220,8 @@ class ComponentMobileSensor(Entity):
             "period_days_left": self._period_left,
             "extra_costs": self._extracosts,
             "usage_details_json": self._data._usage_details,
-            "user_details_json": self._data._user_details
+            "user_details_json": self._data._user_details,
+            "subscription_details_json": self._data._subscription_details
         }
 
     @property
@@ -306,7 +315,8 @@ class ComponentInternetSensor(Entity):
             "unlimited": self._isunlimited,
             "period_start": self._period_start_date,
             "period_days_left": self._period_left,
-            "usage_details_json": self._data._usage_details
+            "usage_details_json": self._data._usage_details,
+            "subscription_details_json": self._data._subscription_details
         }
 
     @property
@@ -332,3 +342,110 @@ class ComponentInternetSensor(Entity):
     def friendly_name(self) -> str:
         return self.unique_id
         
+class ComponentSubscriptionSensor(Entity):
+    def __init__(self, data, hass):
+        self._data = data
+        self._hass = hass
+        self._last_update = None
+        # Section 21
+        self._AbonnementType = None
+        self._Price = None
+        self._ContractStartDate = None
+        self._ContractDuration = None
+        # Section 23
+        self._Msisdn = None
+        self._PUK = None
+        self._ICCShort = None
+        self._MsisdnStatus = None
+        # Section 24
+        self._DataSubscription = None
+        # Section 26
+        self._VoiceSmsSubscription = None
+
+    @property
+    def state(self):
+        """Return the state of the sensor."""
+        return self._AbonnementType
+
+    async def async_update(self):
+        await self._data.update()
+        subscription_details       = self._data._subscription_details
+
+        self._last_update          =  self._data._lastupdate;
+        # Section 21
+        self._AbonnementType       = subscription_details[21]['AbonnementType']
+        self._Price                = subscription_details[21]['Price']
+        self._ContractStartDate    = subscription_details[21]['ContractStartDate']
+        self._ContractDuration     = subscription_details[21]['ContractDuration']
+        # Section 23
+        self._Msisdn               = subscription_details[23]['Msisdn']
+        self._PUK                  = subscription_details[23]['PUK']
+        self._ICCShort             = subscription_details[23]['ICCShort']
+        self._MsisdnStatus         = subscription_details[23]['MsisdnStatus']
+        # Section 24
+        self._DataSubscription     = subscription_details[24]['DataSubscription']
+        # Section 26
+        self._VoiceSmsSubscription = subscription_details[26]['VoiceSmsSubscription']
+        
+    async def async_will_remove_from_hass(self):
+        """Clean up after entity before removal."""
+        _LOGGER.info("async_will_remove_from_hass " + NAME)
+        self._data.clear_session()
+
+
+    @property
+    def icon(self) -> str:
+        """Shows the correct icon for container."""
+        return "mdi:account-cog"
+        
+    @property
+    def unique_id(self) -> str:
+        """Return the name of the sensor."""
+        return (
+            NAME + " subscription info"
+        )
+
+    @property
+    def name(self) -> str:
+        return self.unique_id
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        """Return the state attributes."""
+        return {
+            ATTR_ATTRIBUTION: NAME,
+            "last update": self._last_update,
+            "AbonnementType": self._AbonnementType,
+            "Price": self._Price,
+            "ContractStartDate": self._ContractStartDate,
+            "ContractDuration": self._ContractDuration,
+            "Msisdn": self._Msisdn,
+            "PUK": self._PUK,
+            "ICCShort": self._ICCShort,
+            "MsisdnStatus": self._MsisdnStatus,
+            "DataSubscription": self._DataSubscription,
+            "VoiceSmsSubscription": self._VoiceSmsSubscription
+        }
+
+    @property
+    def device_info(self) -> dict:
+        """I can't remember why this was needed :D"""
+        return {
+            "identifiers": {(DOMAIN, self.unique_id)},
+            "name": self.name,
+            "manufacturer": DOMAIN,
+        }
+
+    @property
+    def unit(self) -> str:
+        """Unit"""
+        return str
+
+    @property
+    def unit_of_measurement(self) -> str:
+        """Return the unit of measurement this sensor expresses itself in."""
+        return "string"
+
+    @property
+    def friendly_name(self) -> str:
+        return self.unique_id
