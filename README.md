@@ -39,6 +39,7 @@ All other files just contain boilerplat code for the integration to work wtihin 
 
 ```
 type: vertical-stack
+cards:
   - type: markdown
     content: >-
       ## <img
