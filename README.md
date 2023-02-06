@@ -63,7 +63,7 @@ Some discussion on this topic can be found within [the Home Assistant community 
 
     | Attribute | Description |
     | --------- | ----------- |
-    | State     | Number of loans by this user at this library |
+    | State     | Info related to the Youfone subscription |
     | `last update `   | Timestamp info last retrieved from the youfone website. (There is a throttling of 1h active to limit requests. Restart HA to force update) |
     | `SubscriptionType`   | Info related to the Youfone subscription |
     | `Price` | Subscription monthly rate |
