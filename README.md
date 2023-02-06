@@ -90,13 +90,6 @@ type: vertical-stack
       min: 0
       max: 100
       unit: '%'
-      colors:
-        - color: var(--label-badge-green)
-          value: 0
-        - color: var(--label-badge-yellow)
-          value: 60
-        - color: var(--label-badge-red)
-          value: 80
   - type: history-graph
     entities:
       - entity: sensor.youfone_be_call_sms
