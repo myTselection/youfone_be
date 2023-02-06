@@ -73,7 +73,7 @@ Some discussion on this topic can be found within [the Home Assistant community 
     | `PUK`  | PUK code of the sim card |
     | `ICCShort`  | SIM card unique id |
     | `MsisdnStatus`  | Status of the SIM card |
-    | `DataSubscription`  | Details (volume indiation) of the data subscription |
+    | `DataSubscription`  | Details (volume indication) of the data subscription |
     | `VoiceSmsSubscription`  | Details (volume indication) of the call & sms subscription |
     </details>
 
