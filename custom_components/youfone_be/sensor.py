@@ -42,7 +42,7 @@ async def dry_setup(hass, config_entry, async_add_devices):
         async_get_clientsession(hass),
         hass
     )
-    await componentData._init()
+    await componentData._forced_update()
     assert componentData._usage_details is not None
     
     sensorMobile = ComponentMobileSensor(componentData, hass)
@@ -96,8 +96,8 @@ class ComponentData:
         self._user_details = None
         
     # same as update, but without throttle to make sure init is always executed
-    async def _init(self):
-        _LOGGER.info("Fetching intit stuff for " + NAME)
+    async def _forced_update(self):
+        _LOGGER.info("Fetching init stuff for " + NAME)
         if not(self._session):
             self._session = ComponentSession()
 
@@ -112,23 +112,12 @@ class ComponentData:
                 
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
     async def _update(self):
-        _LOGGER.info("Fetching intit stuff for " + NAME)
-        if not(self._session):
-            self._session = ComponentSession()
-
-        if self._session:
-            self._user_details = await self._hass.async_add_executor_job(lambda: self._session.login(self._username, self._password))
-            _LOGGER.info(f"{NAME} init login completed")
-            self._usage_details = await self._hass.async_add_executor_job(lambda: self._session.usage_details())
-            _LOGGER.debug(f"{NAME} init usage_details data: {self._usage_details}")
-            self._subscription_details = await self._hass.async_add_executor_job(lambda: self._session.subscription_details())
-            _LOGGER.debug(f"{NAME} init subscription_details data: {self._usage_details}")
-            self._lastupdate = datetime.now()
+        await self._forced_update()
 
     async def update(self):
         await self._update()
     
-    def clear_session():
+    def clear_session(self):
         self._session : None
 
 
@@ -348,7 +337,7 @@ class ComponentSubscriptionSensor(Entity):
         self._hass = hass
         self._last_update = None
         # Section 21
-        self._AbonnementType = None
+        self._SubscriptionType = None
         self._Price = None
         self._ContractStartDate = None
         self._ContractDuration = None
@@ -365,7 +354,7 @@ class ComponentSubscriptionSensor(Entity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self._AbonnementType
+        return self._SubscriptionType
 
     async def async_update(self):
         await self._data.update()
@@ -373,7 +362,7 @@ class ComponentSubscriptionSensor(Entity):
 
         self._last_update          =  self._data._lastupdate;
         # Section 21
-        self._AbonnementType       = subscription_details[21]['AbonnementType']
+        self._SubscriptionType       = subscription_details[21]['AbonnementType'].replace("<br/>"," - ")
         self._Price                = subscription_details[21]['Price']
         self._ContractStartDate    = subscription_details[21]['ContractStartDate']
         self._ContractDuration     = subscription_details[21]['ContractDuration']
@@ -415,7 +404,7 @@ class ComponentSubscriptionSensor(Entity):
         return {
             ATTR_ATTRIBUTION: NAME,
             "last update": self._last_update,
-            "AbonnementType": self._AbonnementType,
+            "SubscriptionType": self._SubscriptionType,
             "Price": self._Price,
             "ContractStartDate": self._ContractStartDate,
             "ContractDuration": self._ContractDuration,
