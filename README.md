@@ -21,7 +21,61 @@ Some discussion on this topic can be found within [the Home Assistant community 
 - Restart Home Assistant
 - Add 'Youfone.be' integration via HA Settings > 'Devices and Services' > 'Integrations'
 - Provide Youfone.be username and password
-- Sensor `Youfone.be call sms` and `Youfone.be internet` should become available with the percentage of data and call/sms left and extra attributes on usage and period start/end etc.
+
+## Integration
+- <details><summary>Sensor <code>sensor.youfone_be_call_sms</code></summary>
+
+    | Attribute | Description |
+    | --------- | ----------- |
+    | State     | Percentage of used call and sms based on total volume and used amount |
+    | `last update `   | Timestamp info last retrieved from the youfone website. (There is a throttling of 1h active to limit requests. Restart HA to force update) |
+    | `phone_number`   | Phone number of the sim card |
+    | `used_percentage` | Percentage of used call and sms based on total volume and used amount |
+    | `period_used_percentage`  | Percentage of period that has passed. Usage will be reset once period has fully passed. |
+    | `total_volume`  | Total volume of available call & sms within subscription |
+    | `includedvolume_usage`  | Used amout of call & sms |
+    | `unlimited`  | Indication if it's an unlimited subscription (not tested) |
+    | `period_start`  | Start date of the next period |
+    | `period_days_left`  | Number of days left in current period |
+    | `extra_costs`  | Amount of extra costs (eg when usage above volume within subscription) |
+    | `usage_details_json`  | Json with full details of usage as received from youfone website |
+    </details>
+  
+- <details><summary>Sensor <code>sensor.youfone_be_internet</code></summary>
+
+    | Attribute | Description |
+    | --------- | ----------- |
+    | State     | Percentage of used data based on total volume and used amount |
+    | `last update `   | Timestamp info last retrieved from the youfone website. (There is a throttling of 1h active to limit requests. Restart HA to force update) |
+    | `phone_number`   | Phone number of the sim card |
+    | `used_percentage` | Percentage of used data based on total volume and used amount |
+    | `period_used_percentage`  | Percentage of period that has passed. Usage will be reset once period has fully passed. |
+    | `total_volume`  | Total volume of available data within subscription |
+    | `includedvolume_usage`  | Used amout of data |
+    | `unlimited`  | Indication if it's an unlimited subscription (not tested) |
+    | `period_start`  | Start date of the next period |
+    | `period_days_left`  | Number of days left in current period |
+    | `extra_costs`  | Amount of extra costs (eg when usage above volume within subscription) |
+    | `usage_details_json`  | Json with full details of usage as received from youfone website | 
+    </details>
+    
+- <details><summary>Sensor <code>sensor.youfone_be_subscription_info</code></summary>
+
+    | Attribute | Description |
+    | --------- | ----------- |
+    | State     | Number of loans by this user at this library |
+    | `last update `   | Timestamp info last retrieved from the youfone website. (There is a throttling of 1h active to limit requests. Restart HA to force update) |
+    | `SubscriptionType`   | Info related to the Youfone subscription |
+    | `Price` | Subscription monthly rate |
+    | `ContractStartDate`  | Contract Start Date. |
+    | `ContractDuration`  | Contract duration |
+    | `Msisdn`  | SIM unique phone number |
+    | `PUK`  | PUK code of the sim card |
+    | `ICCShort`  | SIM card unique id |
+    | `MsisdnStatus`  | Status of the SIM card |
+    | `DataSubscription`  | Details (volume indiation) of the data subscription |
+    | `VoiceSmsSubscription`  | Details (volume indication) of the call & sms subscription |
+    </details>
 
 ## Status
 Still some optimisations are planned, see [Issues](https://github.com/myTselection/youfone_be/issues) section in GitHub.
@@ -36,6 +90,7 @@ All other files just contain boilerplat code for the integration to work wtihin 
 ## Example usage: (using [dual gauge card](https://github.com/custom-cards/dual-gauge-card))
 ### Gauge & Markdown
 <p align="center"><img src="https://raw.githubusercontent.com/myTselection/youfone_be/master/Markdown%20Gauge%20Card%20example.png"/></p>
+<details><summary>Click to show Mardown code example</summary>
 
 ```
 type: vertical-stack
@@ -97,3 +152,4 @@ cards:
     hours_to_show: 500
     refresh_interval: 60
 ```
+</details>
