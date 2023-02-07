@@ -262,7 +262,7 @@ class ComponentInternetSensor(Entity):
         self._phonenumber = self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')
         
         self._period_start_date = self._data._usage_details.get('Object')[2].get('Properties')[0].get('Value')
-        self._period_left = self._data._usage_details.get('Object')[2].get('Properties')[1].get('Value')
+        self._period_left = int(self._data._usage_details.get('Object')[2].get('Properties')[1].get('Value'))
         today = datetime.today()
         period_length = calendar.monthrange(today.year, today.month)[1]
         period_used = period_length - self._period_left
