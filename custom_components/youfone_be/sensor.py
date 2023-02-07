@@ -246,6 +246,7 @@ class ComponentInternetSensor(Entity):
         self._period_left = None
         self._total_volume = None
         self._isunlimited = None
+        self._period_used_percentage = None
         self._used_percentage = None
         self._phonenumber = None
         self._includedvolume_usage = None
@@ -262,6 +263,10 @@ class ComponentInternetSensor(Entity):
         
         self._period_start_date = self._data._usage_details.get('Object')[2].get('Properties')[0].get('Value')
         self._period_left = self._data._usage_details.get('Object')[2].get('Properties')[1].get('Value')
+        today = datetime.today()
+        period_length = calendar.monthrange(today.year, today.month)[1]
+        period_used = period_length - self._period_left
+        self._period_used_percentage = round(100 * (period_used / period_length),1)
         
         self._includedvolume_usage = self._data._usage_details.get('Object')[0].get('Properties')[0].get('Value')
         self._total_volume = self._data._usage_details.get('Object')[0].get('Properties')[1].get('Value')
@@ -299,6 +304,7 @@ class ComponentInternetSensor(Entity):
             "last update": self._last_update,
             "phone_number": self._phonenumber,
             "used_percentage": self._used_percentage,
+            "period_used_percentage": self._period_used_percentage,
             "total_volume": self._total_volume,
             "includedvolume_usage": self._includedvolume_usage,
             "unlimited": self._isunlimited,
