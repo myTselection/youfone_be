@@ -63,7 +63,7 @@ Some discussion on this topic can be found within [the Home Assistant community 
 
     | Attribute | Description |
     | --------- | ----------- |
-    | State     | Number of loans by this user at this library |
+    | State     | Info related to the Youfone subscription |
     | `last update `   | Timestamp info last retrieved from the youfone website. (There is a throttling of 1h active to limit requests. Restart HA to force update) |
     | `SubscriptionType`   | Info related to the Youfone subscription |
     | `Price` | Subscription monthly rate |
@@ -73,7 +73,7 @@ Some discussion on this topic can be found within [the Home Assistant community 
     | `PUK`  | PUK code of the sim card |
     | `ICCShort`  | SIM card unique id |
     | `MsisdnStatus`  | Status of the SIM card |
-    | `DataSubscription`  | Details (volume indiation) of the data subscription |
+    | `DataSubscription`  | Details (volume indication) of the data subscription |
     | `VoiceSmsSubscription`  | Details (volume indication) of the call & sms subscription |
     </details>
 

@@ -7,7 +7,7 @@
   "iot_class": "cloud_polling",
   "name": "Youfone.be",
   "requirements": [],
-  "version": "1.3.0",
+  "version": "1.3.1",
   "issue_tracker": "https://github.com/myTselection/youfone_be/issues",
   "integration_type": "hub"
 }
