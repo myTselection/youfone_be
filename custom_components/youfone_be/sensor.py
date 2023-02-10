@@ -186,7 +186,7 @@ class ComponentMobileSensor(Entity):
     def unique_id(self) -> str:
         """Return the name of the sensor."""
         return (
-            NAME + " call sms"
+            NAME + " " + str(self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')) + " voice sms"
         )
 
     @property
@@ -289,7 +289,7 @@ class ComponentInternetSensor(Entity):
     def unique_id(self) -> str:
         """Return the name of the sensor."""
         return (
-            NAME + " internet"
+            NAME + " " + str(self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')) + " internet"
         )
 
     @property
@@ -397,7 +397,7 @@ class ComponentSubscriptionSensor(Entity):
     def unique_id(self) -> str:
         """Return the name of the sensor."""
         return (
-            NAME + " subscription info"
+            NAME + " " + str(self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')) + " subscription info"
         )
 
     @property
