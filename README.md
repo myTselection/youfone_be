@@ -23,7 +23,7 @@ Some discussion on this topic can be found within [the Home Assistant community 
 - Provide Youfone.be username and password
 
 ## Integration
-- <details><summary>Sensor <code>sensor.youfone_be_call_sms</code></summary>
+- <details><summary>Sensor <code>sensor.youfone_be_<phonenr>_voice_sms</code></summary>
 
     | Attribute | Description |
     | --------- | ----------- |
@@ -41,7 +41,7 @@ Some discussion on this topic can be found within [the Home Assistant community 
     | `usage_details_json`  | Json with full details of usage as received from youfone website |
     </details>
   
-- <details><summary>Sensor <code>sensor.youfone_be_internet</code></summary>
+- <details><summary>Sensor <code>sensor.youfone_be_<phonenr>_internet</code></summary>
 
     | Attribute | Description |
     | --------- | ----------- |
@@ -59,7 +59,7 @@ Some discussion on this topic can be found within [the Home Assistant community 
     | `usage_details_json`  | Json with full details of usage as received from youfone website | 
     </details>
     
-- <details><summary>Sensor <code>sensor.youfone_be_subscription_info</code></summary>
+- <details><summary>Sensor <code>sensor.youfone_be_<phonenr>_subscription_info</code></summary>
 
     | Attribute | Description |
     | --------- | ----------- |
@@ -100,24 +100,24 @@ cards:
       ## <img
       src="https://raw.githubusercontent.com/myTselection/youfone_be/master/icon.png"
       width="30"/>&nbsp;&nbsp;Youfone
-      {{state_attr('sensor.youfone_be_call_sms','phone_number')}}
+      {{state_attr('sensor.youfone_be_<phonenr>_voice_sms','phone_number')}}
 
 
-      ### Totaal bel/sms verbruikt: {{states('sensor.youfone_be_call_sms')}}%
-      ({{state_attr('sensor.youfone_be_call_sms','includedvolume_usage')}} van
-      {{state_attr('sensor.youfone_be_call_sms','total_volume')}})
+      ### Totaal bel/sms verbruikt: {{states('sensor.youfone_be_<phonenr>_voice_sms')}}%
+      ({{state_attr('sensor.youfone_be_<phonenr>_voice_sms','includedvolume_usage')}} van
+      {{state_attr('sensor.youfone_be_<phonenr>_voice_sms','total_volume')}})
 
-      ### Totaal data verbruikt: {{states('sensor.youfone_be_internet')}}%
-      ({{state_attr('sensor.youfone_be_internet','includedvolume_usage')}} van
-      {{state_attr('sensor.youfone_be_internet','total_volume')}})
+      ### Totaal data verbruikt: {{states('sensor.youfone_be_<phonenr>_internet')}}%
+      ({{state_attr('sensor.youfone_be_<phonenr>_internet','includedvolume_usage')}} van
+      {{state_attr('sensor.youfone_be_<phonenr>_internet','total_volume')}})
 
-      #### {{state_attr('sensor.youfone_be_call_sms','period_days_left')|int}}
+      #### {{state_attr('sensor.youfone_be_<phonenr>_voice_sms','period_days_left')|int}}
       dagen resterend
-      ({{((state_attr('sensor.youfone_be_call_sms','total_volume')|replace('
+      ({{((state_attr('sensor.youfone_be_<phonenr>_voice_sms','total_volume')|replace('
       Min','')) or 0)|int -
-      (state_attr('sensor.youfone_be_call_sms','includedvolume_usage') or
+      (state_attr('sensor.youfone_be_<phonenr>_voice_sms','includedvolume_usage') or
       0)|int}} Min)
-      laatste update: *{{state_attr('sensor.youfone_be_call_sms','last update')
+      laatste update: *{{state_attr('sensor.youfone_be_<phonenr>_voice_sms','last update')
       | as_timestamp | timestamp_custom("%d-%m-%Y")}}*
   - type: custom:dual-gauge-card
     title: false
@@ -126,7 +126,7 @@ cards:
     shadeInner: true
     cardwidth: 350
     outer:
-      entity: sensor.youfone_be_call_sms
+      entity: sensor.youfone_be_<phonenr>_voice_sms
       attribute: used_percentage
       label: used
       min: 0
@@ -140,7 +140,7 @@ cards:
         - color: var(--label-badge-red)
           value: 80
     inner:
-      entity: sensor.youfone_be_call_sms
+      entity: sensor.youfone_be_<phonenr>_voice_sms
       label: period
       attribute: period_used_percentage
       min: 0
@@ -148,7 +148,7 @@ cards:
       unit: '%'
   - type: history-graph
     entities:
-      - entity: sensor.youfone_be_call_sms
+      - entity: sensor.youfone_be_<phonenr>_voice_sms
     hours_to_show: 500
     refresh_interval: 60
 ```

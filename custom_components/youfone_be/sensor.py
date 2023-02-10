@@ -10,6 +10,13 @@ from homeassistant.const import ATTR_ATTRIBUTION
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
+from homeassistant.const import (
+    CONF_NAME,
+    CONF_PASSWORD,
+    CONF_RESOURCES,
+    CONF_SCAN_INTERVAL,
+    CONF_USERNAME
+)
 
 from . import DOMAIN, NAME
 from .utils import *
@@ -20,8 +27,8 @@ _DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.0%z"
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
-        vol.Optional("username", default=""): cv.string,
-        vol.Optional("password", default=""): cv.string,
+        vol.Required(CONF_USERNAME): cv.string,
+        vol.Required(CONF_PASSWORD): cv.string
     }
 )
 
@@ -30,8 +37,8 @@ MIN_TIME_BETWEEN_UPDATES = timedelta(hours=1)
 
 async def dry_setup(hass, config_entry, async_add_devices):
     config = config_entry
-    username = config.get("username")
-    password = config.get("password")
+    username = config.get(CONF_USERNAME)
+    password = config.get(CONF_PASSWORD)
 
     check_settings(config, hass)
     sensors = []
@@ -46,12 +53,15 @@ async def dry_setup(hass, config_entry, async_add_devices):
     assert componentData._usage_details is not None
     
     sensorMobile = ComponentMobileSensor(componentData, hass)
+    await sensorMobile.async_update()
     sensors.append(sensorMobile)
     
     sensorInternet = ComponentInternetSensor(componentData, hass)
+    await sensorInternet.async_update()
     sensors.append(sensorInternet)
 
     sensorSubscription = ComponentSubscriptionSensor(componentData, hass)
+    await sensorSubscription.async_update()
     sensors.append(sensorSubscription)
     
     async_add_devices(sensors)
@@ -186,7 +196,7 @@ class ComponentMobileSensor(Entity):
     def unique_id(self) -> str:
         """Return the name of the sensor."""
         return (
-            NAME + " " + str(self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')) + " voice sms"
+            f"{NAME} {self._phonenumber} voice sms"
         )
 
     @property
@@ -289,7 +299,7 @@ class ComponentInternetSensor(Entity):
     def unique_id(self) -> str:
         """Return the name of the sensor."""
         return (
-            NAME + " " + str(self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')) + " internet"
+            f"{NAME} {self._phonenumber} internet"
         )
 
     @property
@@ -397,7 +407,7 @@ class ComponentSubscriptionSensor(Entity):
     def unique_id(self) -> str:
         """Return the name of the sensor."""
         return (
-            NAME + " " + str(self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')) + " subscription info"
+            f"{NAME} {self._Msisdn} subscription info"
         )
 
     @property
