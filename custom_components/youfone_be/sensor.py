@@ -32,7 +32,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     }
 )
 
-MIN_TIME_BETWEEN_UPDATES = timedelta(hours=1)
+MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=15)
 
 
 async def dry_setup(hass, config_entry, async_add_devices):
@@ -165,10 +165,20 @@ class ComponentMobileSensor(Entity):
         # date_string = date_string.replace(month_name, "February")
         # date_object = parser.parse(date_string)
         # period_length = calendar.monthrange(date_object.year, date_object.month)[1]
-        today = datetime.today()
-        period_length = calendar.monthrange(today.year, today.month)[1]
-        period_used = period_length - self._period_left
-        self._period_used_percentage = round(100 * (period_used / period_length),1)
+        # today = datetime.today()
+        # period_length = calendar.monthrange(today.year, today.month)[1]
+        
+        now = datetime.now()
+        first_day_of_month = datetime(now.year, now.month, 1)
+        # Get the total number of days in the current month
+        days_in_month = (first_day_of_month.replace(month=first_day_of_month.month % 12 + 1, day=1) - timedelta(days=1)).day
+
+        # Get the number of days completed so far as a fraction of days
+        total_seconds_in_month = (first_day_of_month.replace(month=first_day_of_month.month % 12 + 1, day=1) - first_day_of_month).total_seconds()
+        seconds_completed = (now - first_day_of_month).total_seconds()
+        days_completed = seconds_completed / total_seconds_in_month
+        self._period_used_percentage = round(100 * days_completed,1)
+        
         
         self._includedvolume_usage = self._data._usage_details.get('Object')[1].get('Properties')[0].get('Value')
         self._total_volume = self._data._usage_details.get('Object')[1].get('Properties')[1].get('Value')
@@ -273,10 +283,16 @@ class ComponentInternetSensor(Entity):
         
         self._period_start_date = self._data._usage_details.get('Object')[2].get('Properties')[0].get('Value')
         self._period_left = int(self._data._usage_details.get('Object')[2].get('Properties')[1].get('Value'))
-        today = datetime.today()
-        period_length = calendar.monthrange(today.year, today.month)[1]
-        period_used = period_length - self._period_left
-        self._period_used_percentage = round(100 * (period_used / period_length),1)
+        now = datetime.now()
+        first_day_of_month = datetime(now.year, now.month, 1)
+        # Get the total number of days in the current month
+        days_in_month = (first_day_of_month.replace(month=first_day_of_month.month % 12 + 1, day=1) - timedelta(days=1)).day
+
+        # Get the number of days completed so far as a fraction of days
+        total_seconds_in_month = (first_day_of_month.replace(month=first_day_of_month.month % 12 + 1, day=1) - first_day_of_month).total_seconds()
+        seconds_completed = (now - first_day_of_month).total_seconds()
+        days_completed = seconds_completed / total_seconds_in_month
+        self._period_used_percentage = round(100 * days_completed,1)
         
         self._includedvolume_usage = self._data._usage_details.get('Object')[0].get('Properties')[0].get('Value')
         self._total_volume = self._data._usage_details.get('Object')[0].get('Properties')[1].get('Value')
