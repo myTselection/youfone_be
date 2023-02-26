@@ -53,15 +53,15 @@ async def dry_setup(hass, config_entry, async_add_devices):
     assert componentData._usage_details is not None
     
     sensorMobile = ComponentMobileSensor(componentData, hass)
-    await sensorMobile.async_update()
+    # await sensorMobile.async_update()
     sensors.append(sensorMobile)
     
     sensorInternet = ComponentInternetSensor(componentData, hass)
-    await sensorInternet.async_update()
+    # await sensorInternet.async_update()
     sensors.append(sensorInternet)
 
     sensorSubscription = ComponentSubscriptionSensor(componentData, hass)
-    await sensorSubscription.async_update()
+    # await sensorSubscription.async_update()
     sensors.append(sensorSubscription)
     
     async_add_devices(sensors)
@@ -144,7 +144,7 @@ class ComponentMobileSensor(Entity):
         self._extracosts = None
         self._used_percentage = None
         self._period_used_percentage = None
-        self._phonenumber = None
+        self._phonenumber = self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')
         self._includedvolume_usage = None
 
     @property
@@ -268,7 +268,7 @@ class ComponentInternetSensor(Entity):
         self._isunlimited = None
         self._period_used_percentage = None
         self._used_percentage = None
-        self._phonenumber = None
+        self._phonenumber = self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')
         self._includedvolume_usage = None
 
     @property
@@ -374,7 +374,7 @@ class ComponentSubscriptionSensor(Entity):
         self._ContractStartDate = None
         self._ContractDuration = None
         # Section 23
-        self._Msisdn = None
+        self._Msisdn = self._data._subscription_details[23]['Msisdn']
         self._PUK = None
         self._ICCShort = None
         self._MsisdnStatus = None
