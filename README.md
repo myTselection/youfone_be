@@ -1,4 +1,4 @@
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+[![HACS Default](https://img.shields.io/badge/HACS-Default-blue.svg)](https://github.com/hacs/default)
 [![GitHub release](https://img.shields.io/github/release/myTselection/youfone_be.svg)](https://github.com/myTselection/youfone_be/releases)
 ![GitHub repo size](https://img.shields.io/github/repo-size/myTselection/youfone_be.svg)
 
@@ -17,7 +17,7 @@ Some discussion on this topic can be found within [the Home Assistant community 
 
 
 ## Installation
-- [HACS](https://hacs.xyz/): add url https://github.com/myTselection/youfone_be as custom repository (HACS > Integration > option: Custom Repositories)
+- [HACS](https://hacs.xyz/): HACS > Integration > search for Youfone and install
 - Restart Home Assistant
 - Add 'Youfone.be' integration via HA Settings > 'Devices and Services' > 'Integrations'
 - Provide Youfone.be username and password
