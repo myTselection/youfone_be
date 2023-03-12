@@ -28,7 +28,8 @@ _DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.0%z"
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_USERNAME): cv.string,
-        vol.Required(CONF_PASSWORD): cv.string
+        vol.Required(CONF_PASSWORD): cv.string,
+        vol.Optional("country"): cv.string
     }
 )
 
@@ -39,6 +40,9 @@ async def dry_setup(hass, config_entry, async_add_devices):
     config = config_entry
     username = config.get(CONF_USERNAME)
     password = config.get(CONF_PASSWORD)
+    country = config.get("country")
+    if not country or country == "":
+        country = "BE"
 
     check_settings(config, hass)
     sensors = []
@@ -46,6 +50,7 @@ async def dry_setup(hass, config_entry, async_add_devices):
     componentData = ComponentData(
         username,
         password,
+        country,
         async_get_clientsession(hass),
         hass
     )
@@ -94,11 +99,12 @@ async def async_remove_entry(hass, config_entry):
         
 
 class ComponentData:
-    def __init__(self, username, password, client, hass):
+    def __init__(self, username, password, country, client, hass):
         self._username = username
         self._password = password
+        self._country = country
         self._client = client
-        self._session = ComponentSession()
+        self._session = ComponentSession(self._country)
         self._usage_details = None
         self._subscription_details = None
         self._hass = hass
@@ -109,7 +115,7 @@ class ComponentData:
     async def _forced_update(self):
         _LOGGER.info("Fetching init stuff for " + NAME)
         if not(self._session):
-            self._session = ComponentSession()
+            self._session = ComponentSession(self._country)
 
         if self._session:
             self._user_details = await self._hass.async_add_executor_job(lambda: self._session.login(self._username, self._password))
@@ -146,6 +152,7 @@ class ComponentMobileSensor(Entity):
         self._period_used_percentage = None
         self._phonenumber = self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')
         self._includedvolume_usage = None
+        self._country = self._data._country
 
     @property
     def state(self):
@@ -157,6 +164,7 @@ class ComponentMobileSensor(Entity):
         self._last_update =  self._data._lastupdate;
         
         self._phonenumber = self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')
+        self._country = self._data._country
         self._period_start_date = self._data._usage_details.get('Object')[2].get('Properties')[0].get('Value')
         self._period_left = int(self._data._usage_details.get('Object')[2].get('Properties')[1].get('Value'))
         # date_string = self._period_start_date
@@ -230,7 +238,8 @@ class ComponentMobileSensor(Entity):
             "extra_costs": self._extracosts,
             "usage_details_json": self._data._usage_details,
             "user_details_json": self._data._user_details,
-            "subscription_details_json": self._data._subscription_details
+            "subscription_details_json": self._data._subscription_details,
+            "country": self._country
         }
 
     @property
@@ -270,6 +279,7 @@ class ComponentInternetSensor(Entity):
         self._used_percentage = None
         self._phonenumber = self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')
         self._includedvolume_usage = None
+        self._country = self._data._country
 
     @property
     def state(self):
@@ -280,6 +290,7 @@ class ComponentInternetSensor(Entity):
         await self._data.update()
         self._last_update =  self._data._lastupdate;
         self._phonenumber = self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')
+        self._country = self._data._country
         
         self._period_start_date = self._data._usage_details.get('Object')[2].get('Properties')[0].get('Value')
         self._period_left = int(self._data._usage_details.get('Object')[2].get('Properties')[1].get('Value'))
@@ -337,7 +348,8 @@ class ComponentInternetSensor(Entity):
             "period_start": self._period_start_date,
             "period_days_left": self._period_left,
             "usage_details_json": self._data._usage_details,
-            "subscription_details_json": self._data._subscription_details
+            "subscription_details_json": self._data._subscription_details,
+            "country": self._country
         }
 
     @property
@@ -382,6 +394,7 @@ class ComponentSubscriptionSensor(Entity):
         self._DataSubscription = None
         # Section 26
         self._VoiceSmsSubscription = None
+        self._country = self._data._country
 
     @property
     def state(self):
@@ -407,6 +420,7 @@ class ComponentSubscriptionSensor(Entity):
         self._DataSubscription     = subscription_details[24]['DataSubscription']
         # Section 26
         self._VoiceSmsSubscription = subscription_details[26]['VoiceSmsSubscription']
+        self._country = self._data._country
         
     async def async_will_remove_from_hass(self):
         """Clean up after entity before removal."""
@@ -445,7 +459,8 @@ class ComponentSubscriptionSensor(Entity):
             "ICCShort": self._ICCShort,
             "MsisdnStatus": self._MsisdnStatus,
             "DataSubscription": self._DataSubscription,
-            "VoiceSmsSubscription": self._VoiceSmsSubscription
+            "VoiceSmsSubscription": self._VoiceSmsSubscription,
+            "country": self._country
         }
 
     @property

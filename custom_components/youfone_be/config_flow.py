@@ -29,9 +29,11 @@ def create_schema(entry, option=False):
         # We use .get here incase some of the texts gets changed.
         default_username = entry.data.get(CONF_USERNAME, "")
         default_password = entry.data.get(CONF_PASSWORD, "")
+        default_country = entry.data.get("country", "BE")
     else:
         default_username = ""
         default_password = ""
+        default_country = "BE"
 
     data_schema = OrderedDict()
     data_schema[
@@ -40,6 +42,9 @@ def create_schema(entry, option=False):
     data_schema[
         vol.Required(CONF_PASSWORD, description="password")
     ] = str
+    data_schema[
+        vol.Optional("country", default=default_country, description="country")
+    ] = vol.In({"NL":"NL","BE":"BE"})
 
     return data_schema
 
@@ -69,6 +74,13 @@ class Mixin:
             password = user_input.get(CONF_PASSWORD)
         else:
             self._errors["base"] = "missing password"
+            
+        country = None
+
+        if user_input.get("country"):
+            country = user_input.get("country")
+        else:
+            country = "BE"
             
 
 
