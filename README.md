@@ -1,4 +1,4 @@
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+[![HACS Default](https://img.shields.io/badge/HACS-Default-blue.svg)](https://github.com/hacs/default)
 [![GitHub release](https://img.shields.io/github/release/myTselection/youfone_be.svg)](https://github.com/myTselection/youfone_be/releases)
 ![GitHub repo size](https://img.shields.io/github/repo-size/myTselection/youfone_be.svg)
 
@@ -17,10 +17,10 @@ Some discussion on this topic can be found within [the Home Assistant community 
 
 
 ## Installation
-- [HACS](https://hacs.xyz/): add url https://github.com/myTselection/youfone_be as custom repository (HACS > Integration > option: Custom Repositories)
+- [HACS](https://hacs.xyz/): HACS > Integration > search for Youfone and install
 - Restart Home Assistant
 - Add 'Youfone.be' integration via HA Settings > 'Devices and Services' > 'Integrations'
-- Provide Youfone.be username and password
+- Provide Youfone.be username and password and country (BE or NL)
 
 ## Integration
 - <details><summary>Sensor <code>sensor.youfone_be_<phonenr>_voice_sms</code></summary>
@@ -39,6 +39,7 @@ Some discussion on this topic can be found within [the Home Assistant community 
     | `period_days_left`  | Number of days left in current period |
     | `extra_costs`  | Amount of extra costs (eg when usage above volume within subscription) |
     | `usage_details_json`  | Json with full details of usage as received from youfone website |
+    | `country`  | Country (BE or NL) |
     </details>
   
 - <details><summary>Sensor <code>sensor.youfone_be_<phonenr>_internet</code></summary>
@@ -57,6 +58,7 @@ Some discussion on this topic can be found within [the Home Assistant community 
     | `period_days_left`  | Number of days left in current period |
     | `extra_costs`  | Amount of extra costs (eg when usage above volume within subscription) |
     | `usage_details_json`  | Json with full details of usage as received from youfone website | 
+    | `country`  | Country (BE or NL) |
     </details>
     
 - <details><summary>Sensor <code>sensor.youfone_be_<phonenr>_subscription_info</code></summary>
@@ -75,6 +77,7 @@ Some discussion on this topic can be found within [the Home Assistant community 
     | `MsisdnStatus`  | Status of the SIM card |
     | `DataSubscription`  | Details (volume indication) of the data subscription |
     | `VoiceSmsSubscription`  | Details (volume indication) of the call & sms subscription |
+    | `country`  | Country (BE or NL) |
     </details>
 
 ## Status
