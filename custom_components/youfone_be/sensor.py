@@ -188,10 +188,13 @@ class ComponentMobileSensor(Entity):
         self._period_used_percentage = round(100 * days_completed,1)
         
         
+        self._isunlimited = self._data._usage_details.get('Object')[1].get('Properties')[3].get('Value')
         self._includedvolume_usage = self._data._usage_details.get('Object')[1].get('Properties')[0].get('Value')
         self._total_volume = self._data._usage_details.get('Object')[1].get('Properties')[1].get('Value')
-        self._used_percentage = round((int(self._includedvolume_usage)/int(self._total_volume.split(" ")[0]))*100,2)
-        self._isunlimited = self._data._usage_details.get('Object')[1].get('Properties')[3].get('Value')
+        if self._isunlimited == '1':
+            self._used_percentage = self._data._usage_details.get('Object')[1].get('Properties')[2].get('Value')
+        else:
+            self._used_percentage = round((int(self._includedvolume_usage)/int(self._total_volume.split(" ")[0]))*100,2)
         try:
             self._extracosts = self._data._usage_details.get('Object')[3].get('Properties')[0].get('Value')
         except IndexError: 
@@ -305,10 +308,13 @@ class ComponentInternetSensor(Entity):
         days_completed = seconds_completed / total_seconds_in_month
         self._period_used_percentage = round(100 * days_completed,1)
         
-        self._includedvolume_usage = self._data._usage_details.get('Object')[0].get('Properties')[0].get('Value')
         self._total_volume = self._data._usage_details.get('Object')[0].get('Properties')[1].get('Value')
-        self._used_percentage = round((int(self._includedvolume_usage)/int(self._total_volume.split(" ")[0]))*100,2)
         self._isunlimited = self._data._usage_details.get('Object')[0].get('Properties')[3].get('Value')
+        self._includedvolume_usage = self._data._usage_details.get('Object')[0].get('Properties')[0].get('Value')
+        if self._isunlimited == '1':
+            self._used_percentage = self._data._usage_details.get('Object')[0].get('Properties')[2].get('Value')
+        else:
+            self._used_percentage = round((int(self._includedvolume_usage)/int(self._total_volume.split(" ")[0]))*100,2)
             
         
     async def async_will_remove_from_hass(self):
