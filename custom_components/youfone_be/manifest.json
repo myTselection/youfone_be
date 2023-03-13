@@ -1,6 +1,6 @@
 {
   "domain": "youfone_be",
-  "name": "Youfone.be",
+  "name": "Youfone",
   "codeowners": ["@myTselection"],
   "config_flow": true,
   "dependencies": [],
@@ -9,5 +9,5 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/myTselection/youfone_be/issues",
   "requirements": [],
-  "version": "2.1.1"
+  "version": "2.1.2"
 }
