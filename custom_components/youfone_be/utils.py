@@ -32,6 +32,7 @@ class ComponentSession(object):
     def __init__(self, country):
         self.s = requests.Session()
         self.s.headers["User-Agent"] = "Python/3"
+        self.s.headers["referer"] = f"https://my.youfone.{country.lower()}/login"
         self.userdetails = None
         self.msisdn = None
         self._country = country.lower()
