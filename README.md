@@ -23,7 +23,7 @@ Some discussion on this topic can be found within [the Home Assistant community 
 - Provide Youfone.be username and password and country (BE or NL)
 
 ## Integration
-- <details><summary>Sensor <code>sensor.youfone_be_<phonenr>_voice_sms</code></summary>
+- <details><summary>Sensor <code>sensor.youfone_<i>phonenr</i>_voice_sms</code></summary>
 
     | Attribute | Description |
     | --------- | ----------- |
@@ -42,7 +42,7 @@ Some discussion on this topic can be found within [the Home Assistant community 
     | `country`  | Country (BE or NL) |
     </details>
   
-- <details><summary>Sensor <code>sensor.youfone_be_<phonenr>_internet</code></summary>
+- <details><summary>Sensor <code>sensor.youfone_<i>phonenr</i>_internet</code></summary>
 
     | Attribute | Description |
     | --------- | ----------- |
@@ -61,7 +61,7 @@ Some discussion on this topic can be found within [the Home Assistant community 
     | `country`  | Country (BE or NL) |
     </details>
     
-- <details><summary>Sensor <code>sensor.youfone_be_<phonenr>_subscription_info</code></summary>
+- <details><summary>Sensor <code>sensor.youfone_<i>phonenr</i>_subscription_info</code></summary>
 
     | Attribute | Description |
     | --------- | ----------- |
