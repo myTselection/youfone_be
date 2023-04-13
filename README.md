@@ -96,7 +96,7 @@ If you would encounter some issues with this custom component, you can enable ex
 logger:
   default: info
   logs:
-     cusomt_components.youfone_be: debug
+     custom_components.youfone_be: debug
 ```
 
 ## Example usage: (using [dual gauge card](https://github.com/custom-cards/dual-gauge-card))
