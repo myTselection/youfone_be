@@ -59,17 +59,17 @@ async def dry_setup(hass, config_entry, async_add_devices):
     assert componentData._usage_details is not None
     assert componentData._msisdn is not None
     
-    for msisdn in componentData._msisdn:
+    for msisdn in componentData._msisdn.keys():
         sensorMobile = ComponentMobileSensor(componentData, hass, msisdn)
         # await sensorMobile.async_update()
         sensors.append(sensorMobile)
     
-    for msisdn in componentData._msisdn:
+    for msisdn in componentData._msisdn.keys():
         sensorInternet = ComponentInternetSensor(componentData, hass, msisdn)
         # await sensorInternet.async_update()
         sensors.append(sensorInternet)
 
-    for msisdn in componentData._msisdn:
+    for msisdn in componentData._msisdn.keys():
         sensorSubscription = ComponentSubscriptionSensor(componentData, hass, msisdn)
         # await sensorSubscription.async_update()
         sensors.append(sensorSubscription)
@@ -422,19 +422,19 @@ class ComponentSubscriptionSensor(Entity):
 
         self._last_update          =  self._data._lastupdate;
         # Section 21
-        self._SubscriptionType     = subscription_details[self._phonenumber][21]['AbonnementType'].replace("<br/>"," - ")
-        self._Price                = subscription_details[self._phonenumber][21]['Price']
-        self._ContractStartDate    = subscription_details[self._phonenumber][21]['ContractStartDate']
-        self._ContractDuration     = subscription_details[self._phonenumber][21]['ContractDuration']
+        self._SubscriptionType     = subscription_details[21]['AbonnementType'].replace("<br/>"," - ")
+        self._Price                = subscription_details[21]['Price']
+        self._ContractStartDate    = subscription_details[21]['ContractStartDate']
+        self._ContractDuration     = subscription_details[21]['ContractDuration']
         # Section 23
-        self._Msisdn               = subscription_details[self._phonenumber][23]['Msisdn']
-        self._PUK                  = subscription_details[self._phonenumber][23]['PUK']
-        self._ICCShort             = subscription_details[self._phonenumber][23]['ICCShort']
-        self._MsisdnStatus         = subscription_details[self._phonenumber][23]['MsisdnStatus']
+        self._Msisdn               = subscription_details[23]['Msisdn']
+        self._PUK                  = subscription_details[23]['PUK']
+        self._ICCShort             = subscription_details[23]['ICCShort']
+        self._MsisdnStatus         = subscription_details[23]['MsisdnStatus']
         # Section 24
-        self._DataSubscription     = subscription_details[self._phonenumber][24]['DataSubscription']
+        self._DataSubscription     = subscription_details[24]['DataSubscription']
         # Section 26
-        self._VoiceSmsSubscription = subscription_details[self._phonenumber][26]['VoiceSmsSubscription']
+        self._VoiceSmsSubscription = subscription_details[26]['VoiceSmsSubscription']
         self._country = self._data._country
         
     async def async_will_remove_from_hass(self):
@@ -475,7 +475,10 @@ class ComponentSubscriptionSensor(Entity):
             "MsisdnStatus": self._MsisdnStatus,
             "DataSubscription": self._DataSubscription,
             "VoiceSmsSubscription": self._VoiceSmsSubscription,
-            "country": self._country
+            "country": self._country,
+            "user_details_json": self._data._user_details,
+            "usage_details_json": self._data._usage_details[self._phonenumber],
+            "subscritpion_details_json": self._data._subscription_details[self._phonenumber]
         }
 
     @property
