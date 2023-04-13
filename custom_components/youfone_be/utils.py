@@ -34,7 +34,7 @@ class ComponentSession(object):
         self.s.headers["User-Agent"] = "Python/3"
         self.s.headers["referer"] = f"https://my.youfone.{country.lower()}/login"
         self.userdetails = None
-        self.msisdn = None
+        self.msisdn = []
         self._country = country.lower()
 
     def login(self, username, password):
@@ -55,7 +55,8 @@ class ComponentSession(object):
         _LOGGER.debug("youfone.be login header: " + str(response.headers))
         assert response.status_code == 200
         self.userdetails = response.json()
-        self.msisdn = self.userdetails.get('Object').get('Customers')[0].get('Msisdn')
+        for customer in self.userdetails.get('Object').get('Customers'):
+            self.msisdn.append(customer.get('Msisdn'))
         self.s.headers["securitykey"] = response.headers.get('securitykey')
         return self.userdetails
 
@@ -63,26 +64,32 @@ class ComponentSession(object):
     # https://my.youfone.be/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/GetOverviewMsisdnInfo
     # request.Msisdn - phonenr 
     # {"Message":null,"ResultCode":0,"Object":[{"Properties":[{"Key":"UsedAmount","Value":"0"},{"Key":"BundleDurationWithUnits","Value":"250 MB"},{"Key":"Percentage","Value":"0.00"},{"Key":"_isUnlimited","Value":"0"},{"Key":"_isExtraMbsAvailable","Value":"1"}],"SectionId":1},{"Properties":[{"Key":"UsedAmount","Value":"24"},{"Key":"BundleDurationWithUnits","Value":"200 Min"},{"Key":"Percentage","Value":"12.00"},{"Key":"_isUnlimited","Value":"0"}],"SectionId":2},{"Properties":[{"Key":"StartDate","Value":"1 februari 2023"},{"Key":"NumberOfRemainingDays","Value":"16"}],"SectionId":3},{"Properties":[{"Key":"UsedAmount","Value":"0.00"}],"SectionId":4}]}
+        usage_details_data = []
         header = {"Content-Type": "application/json"}
-        response = self.s.get(f"https://my.youfone.{self._country}/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/GetOverviewMsisdnInfo",data='{"request": {"Msisdn": '+str(self.msisdn)+'}}',headers=header,timeout=10)
-        self.s.headers["securitykey"] = response.headers.get('securitykey')
-        _LOGGER.debug("youfone.be  result status code: " + str(response.status_code) + ", msisdn" + str(self.msisdn))
-        _LOGGER.debug("youfone.be  result " + response.text)
-        assert response.status_code == 200
-        return response.json()
+        for msisdn in self.msisdn:
+            response = self.s.get(f"https://my.youfone.{self._country}/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/GetOverviewMsisdnInfo",data='{"request": {"Msisdn": '+str(msisdn)+'}}',headers=header,timeout=10)
+            self.s.headers["securitykey"] = response.headers.get('securitykey')
+            _LOGGER.debug("youfone.be  result status code: " + str(response.status_code) + ", msisdn" + str(msisdn))
+            _LOGGER.debug("youfone.be  result " + response.text)
+            assert response.status_code == 200
+            usage_details_data.append(response.json())
+        return usage_details_data
         
     def subscription_details(self):
+        subscription_details_data = []
         header = {"Content-Type": "application/json"}
-        response = self.s.get(f"https://my.youfone.{self._country}/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/GetAbonnementMsisdnInfo",data='{"request": {"Msisdn": '+str(self.msisdn)+'}}',headers=header,timeout=10)
-        self.s.headers["securitykey"] = response.headers.get('securitykey')
-        _LOGGER.debug("youfone.be  result status code: " + str(response.status_code) + ", msisdn" + str(self.msisdn))
-        _LOGGER.debug("youfone.be  result " + response.text)
-        assert response.status_code == 200
-        jresponse = response.json()
-        assert jresponse["ResultCode"] == 0
-        obj = {}
-        for section in jresponse["Object"]:
-            obj[section["SectionId"]] = {}
-            for prop in section["Properties"]:
-                obj[section["SectionId"]][prop["Key"]] = prop["Value"]
-        return obj
+        for msisdn in self.msisdn:
+            response = self.s.get(f"https://my.youfone.{self._country}/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/GetAbonnementMsisdnInfo",data='{"request": {"Msisdn": '+str(msisdn)+'}}',headers=header,timeout=10)
+            self.s.headers["securitykey"] = response.headers.get('securitykey')
+            _LOGGER.debug("youfone.be  result status code: " + str(response.status_code) + ", msisdn" + str(msisdn))
+            _LOGGER.debug("youfone.be  result " + response.text)
+            assert response.status_code == 200
+            jresponse = response.json()
+            assert jresponse["ResultCode"] == 0
+            obj = {}
+            for section in jresponse["Object"]:
+                obj[section["SectionId"]] = {}
+                for prop in section["Properties"]:
+                    obj[section["SectionId"]][prop["Key"]] = prop["Value"]
+            subscription_details_data.append(obj)
+        return subscription_details_data

@@ -55,19 +55,22 @@ async def dry_setup(hass, config_entry, async_add_devices):
         hass
     )
     await componentData._forced_update()
+    assert componentData._user_details is not None
     assert componentData._usage_details is not None
     
-    sensorMobile = ComponentMobileSensor(componentData, hass)
-    # await sensorMobile.async_update()
-    sensors.append(sensorMobile)
+    for msisdn in componentData._msisdn:
+        sensorMobile = ComponentMobileSensor(componentData, hass, msisdn)
+        # await sensorMobile.async_update()
+        sensors.append(sensorMobile)
     
     sensorInternet = ComponentInternetSensor(componentData, hass)
     # await sensorInternet.async_update()
     sensors.append(sensorInternet)
 
-    sensorSubscription = ComponentSubscriptionSensor(componentData, hass)
-    # await sensorSubscription.async_update()
-    sensors.append(sensorSubscription)
+    for index, msisdn in enumerate(componentData._msisdn):
+        sensorSubscription = ComponentSubscriptionSensor(componentData, hass, index, msisdn)
+        # await sensorSubscription.async_update()
+        sensors.append(sensorSubscription)
     
     async_add_devices(sensors)
 
@@ -110,6 +113,7 @@ class ComponentData:
         self._hass = hass
         self._lastupdate = None
         self._user_details = None
+        self._msisdn = None
         
     # same as update, but without throttle to make sure init is always executed
     async def _forced_update(self):
@@ -120,6 +124,7 @@ class ComponentData:
         if self._session:
             self._user_details = await self._hass.async_add_executor_job(lambda: self._session.login(self._username, self._password))
             _LOGGER.info(f"{NAME} init login completed")
+            self._msisdn = self._session.msisdn
             self._usage_details = await self._hass.async_add_executor_job(lambda: self._session.usage_details())
             _LOGGER.debug(f"{NAME} init usage_details data: {self._usage_details}")
             self._subscription_details = await self._hass.async_add_executor_job(lambda: self._session.subscription_details())
@@ -139,7 +144,7 @@ class ComponentData:
 
 
 class ComponentMobileSensor(Entity):
-    def __init__(self, data, hass):
+    def __init__(self, data, hass, phonenumber):
         self._data = data
         self._hass = hass
         self._last_update = None
@@ -150,7 +155,7 @@ class ComponentMobileSensor(Entity):
         self._extracosts = None
         self._used_percentage = None
         self._period_used_percentage = None
-        self._phonenumber = self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')
+        self._phonenumber = phonenumber
         self._includedvolume_usage = None
         self._country = self._data._country
 
@@ -163,7 +168,7 @@ class ComponentMobileSensor(Entity):
         await self._data.update()
         self._last_update =  self._data._lastupdate;
         
-        self._phonenumber = self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')
+        # self._phonenumber = self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')
         self._country = self._data._country
         self._period_start_date = self._data._usage_details.get('Object')[2].get('Properties')[0].get('Value')
         self._period_left = int(self._data._usage_details.get('Object')[2].get('Properties')[1].get('Value'))
@@ -382,9 +387,10 @@ class ComponentInternetSensor(Entity):
         return self.unique_id
         
 class ComponentSubscriptionSensor(Entity):
-    def __init__(self, data, hass):
+    def __init__(self, data, hass, subscription_details_index, phonenumber):
         self._data = data
         self._hass = hass
+        self._subscription_details_index = subscription_details_index
         self._last_update = None
         # Section 21
         self._SubscriptionType = None
@@ -392,7 +398,7 @@ class ComponentSubscriptionSensor(Entity):
         self._ContractStartDate = None
         self._ContractDuration = None
         # Section 23
-        self._Msisdn = self._data._subscription_details[23]['Msisdn']
+        self._Msisdn = self._data._subscription_details[self._subscription_details_index][23]['Msisdn']
         self._PUK = None
         self._ICCShort = None
         self._MsisdnStatus = None
@@ -409,23 +415,23 @@ class ComponentSubscriptionSensor(Entity):
 
     async def async_update(self):
         await self._data.update()
-        subscription_details       = self._data._subscription_details
+        subscription_details       = self._data._subscription_details[self._subscription_details_index]
 
         self._last_update          =  self._data._lastupdate;
         # Section 21
-        self._SubscriptionType       = subscription_details[21]['AbonnementType'].replace("<br/>"," - ")
-        self._Price                = subscription_details[21]['Price']
-        self._ContractStartDate    = subscription_details[21]['ContractStartDate']
-        self._ContractDuration     = subscription_details[21]['ContractDuration']
+        self._SubscriptionType       = subscription_details[self._subscription_details_index][21]['AbonnementType'].replace("<br/>"," - ")
+        self._Price                = subscription_details[self._subscription_details_index][21]['Price']
+        self._ContractStartDate    = subscription_details[self._subscription_details_index][21]['ContractStartDate']
+        self._ContractDuration     = subscription_details[self._subscription_details_index][21]['ContractDuration']
         # Section 23
-        self._Msisdn               = subscription_details[23]['Msisdn']
-        self._PUK                  = subscription_details[23]['PUK']
-        self._ICCShort             = subscription_details[23]['ICCShort']
-        self._MsisdnStatus         = subscription_details[23]['MsisdnStatus']
+        self._Msisdn               = subscription_details[self._subscription_details_index][23]['Msisdn']
+        self._PUK                  = subscription_details[self._subscription_details_index][23]['PUK']
+        self._ICCShort             = subscription_details[self._subscription_details_index][23]['ICCShort']
+        self._MsisdnStatus         = subscription_details[self._subscription_details_index][23]['MsisdnStatus']
         # Section 24
-        self._DataSubscription     = subscription_details[24]['DataSubscription']
+        self._DataSubscription     = subscription_details[self._subscription_details_index][24]['DataSubscription']
         # Section 26
-        self._VoiceSmsSubscription = subscription_details[26]['VoiceSmsSubscription']
+        self._VoiceSmsSubscription = subscription_details[self._subscription_details_index][26]['VoiceSmsSubscription']
         self._country = self._data._country
         
     async def async_will_remove_from_hass(self):
