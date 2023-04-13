@@ -1,15 +1,16 @@
 {
+	
+  "domain": "youfone_be",
+  "name": "Youfone",
   "codeowners": [
     "@myTselection"
   ],
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/myTselection/youfone_be",
-  "domain": "youfone_be",
   "integration_type": "hub",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/myTselection/youfone_be/issues",
-  "name": "Youfone",
   "requirements": [],
   "version": "4.0.0"
 }
