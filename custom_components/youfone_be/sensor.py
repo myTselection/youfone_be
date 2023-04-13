@@ -57,18 +57,20 @@ async def dry_setup(hass, config_entry, async_add_devices):
     await componentData._forced_update()
     assert componentData._user_details is not None
     assert componentData._usage_details is not None
+    assert componentData._msisdn is not None
     
     for msisdn in componentData._msisdn:
         sensorMobile = ComponentMobileSensor(componentData, hass, msisdn)
         # await sensorMobile.async_update()
         sensors.append(sensorMobile)
     
-    sensorInternet = ComponentInternetSensor(componentData, hass)
-    # await sensorInternet.async_update()
-    sensors.append(sensorInternet)
+    for msisdn in componentData._msisdn:
+        sensorInternet = ComponentInternetSensor(componentData, hass, msisdn)
+        # await sensorInternet.async_update()
+        sensors.append(sensorInternet)
 
-    for index, msisdn in enumerate(componentData._msisdn):
-        sensorSubscription = ComponentSubscriptionSensor(componentData, hass, index, msisdn)
+    for msisdn in componentData._msisdn:
+        sensorSubscription = ComponentSubscriptionSensor(componentData, hass, msisdn)
         # await sensorSubscription.async_update()
         sensors.append(sensorSubscription)
     
@@ -108,11 +110,11 @@ class ComponentData:
         self._country = country
         self._client = client
         self._session = ComponentSession(self._country)
+        self._user_details = None
         self._usage_details = None
         self._subscription_details = None
         self._hass = hass
         self._lastupdate = None
-        self._user_details = None
         self._msisdn = None
         
     # same as update, but without throttle to make sure init is always executed
@@ -125,6 +127,7 @@ class ComponentData:
             self._user_details = await self._hass.async_add_executor_job(lambda: self._session.login(self._username, self._password))
             _LOGGER.info(f"{NAME} init login completed")
             self._msisdn = self._session.msisdn
+            _LOGGER.debug(f"{NAME} init login _msisdn = {self._msisdn}")
             self._usage_details = await self._hass.async_add_executor_job(lambda: self._session.usage_details())
             _LOGGER.debug(f"{NAME} init usage_details data: {self._usage_details}")
             self._subscription_details = await self._hass.async_add_executor_job(lambda: self._session.subscription_details())
@@ -170,8 +173,8 @@ class ComponentMobileSensor(Entity):
         
         # self._phonenumber = self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')
         self._country = self._data._country
-        self._period_start_date = self._data._usage_details.get('Object')[2].get('Properties')[0].get('Value')
-        self._period_left = int(self._data._usage_details.get('Object')[2].get('Properties')[1].get('Value'))
+        self._period_start_date = self._data._usage_details[self._phonenumber].get('Object')[2].get('Properties')[0].get('Value')
+        self._period_left = int(self._data._usage_details[self._phonenumber].get('Object')[2].get('Properties')[1].get('Value'))
         # date_string = self._period_start_date
         # month_name = date_string.split()[1]
         # month_name = languages.get(name=month_name).name
@@ -193,15 +196,15 @@ class ComponentMobileSensor(Entity):
         self._period_used_percentage = round(100 * days_completed,1)
         
         
-        self._isunlimited = self._data._usage_details.get('Object')[1].get('Properties')[3].get('Value')
-        self._includedvolume_usage = self._data._usage_details.get('Object')[1].get('Properties')[0].get('Value')
-        self._total_volume = self._data._usage_details.get('Object')[1].get('Properties')[1].get('Value')
+        self._isunlimited = self._data._usage_details[self._phonenumber].get('Object')[1].get('Properties')[3].get('Value')
+        self._includedvolume_usage = self._data._usage_details[self._phonenumber].get('Object')[1].get('Properties')[0].get('Value')
+        self._total_volume = self._data._usage_details[self._phonenumber].get('Object')[1].get('Properties')[1].get('Value')
         if self._isunlimited == '1':
-            self._used_percentage = self._data._usage_details.get('Object')[1].get('Properties')[2].get('Value')
+            self._used_percentage = self._data._usage_details[self._phonenumber].get('Object')[1].get('Properties')[2].get('Value')
         else:
             self._used_percentage = round((int(self._includedvolume_usage)/int(self._total_volume.split(" ")[0]))*100,2)
         try:
-            self._extracosts = self._data._usage_details.get('Object')[3].get('Properties')[0].get('Value')
+            self._extracosts = self._data._usage_details[self._phonenumber].get('Object')[3].get('Properties')[0].get('Value')
         except IndexError: 
             self._extracosts = 0
             
@@ -244,9 +247,9 @@ class ComponentMobileSensor(Entity):
             "period_start": self._period_start_date,
             "period_days_left": self._period_left,
             "extra_costs": self._extracosts,
-            "usage_details_json": self._data._usage_details,
             "user_details_json": self._data._user_details,
-            "subscription_details_json": self._data._subscription_details,
+            "usage_details_json": self._data._usage_details[self._phonenumber],
+            "subscription_details_json": self._data._subscription_details[self._phonenumber],
             "country": self._country
         }
 
@@ -275,9 +278,10 @@ class ComponentMobileSensor(Entity):
         
 
 class ComponentInternetSensor(Entity):
-    def __init__(self, data, hass):
+    def __init__(self, data, hass, phonenumber):
         self._data = data
         self._hass = hass
+        self._phonenumber = phonenumber
         self._last_update = None
         self._period_start_date = None
         self._period_left = None
@@ -285,7 +289,6 @@ class ComponentInternetSensor(Entity):
         self._isunlimited = None
         self._period_used_percentage = None
         self._used_percentage = None
-        self._phonenumber = self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')
         self._includedvolume_usage = None
         self._country = self._data._country
 
@@ -297,11 +300,11 @@ class ComponentInternetSensor(Entity):
     async def async_update(self):
         await self._data.update()
         self._last_update =  self._data._lastupdate;
-        self._phonenumber = self._data._user_details.get('Object').get('Customers')[0].get('Msisdn')
+        self._phonenumber = self._phonenumber
         self._country = self._data._country
         
-        self._period_start_date = self._data._usage_details.get('Object')[2].get('Properties')[0].get('Value')
-        self._period_left = int(self._data._usage_details.get('Object')[2].get('Properties')[1].get('Value'))
+        self._period_start_date = self._data._usage_details[self._phonenumber].get('Object')[2].get('Properties')[0].get('Value')
+        self._period_left = int(self._data._usage_details[self._phonenumber].get('Object')[2].get('Properties')[1].get('Value'))
         now = datetime.now()
         first_day_of_month = datetime(now.year, now.month, 1)
         # Get the total number of days in the current month
@@ -313,11 +316,11 @@ class ComponentInternetSensor(Entity):
         days_completed = seconds_completed / total_seconds_in_month
         self._period_used_percentage = round(100 * days_completed,1)
         
-        self._total_volume = self._data._usage_details.get('Object')[0].get('Properties')[1].get('Value')
-        self._isunlimited = self._data._usage_details.get('Object')[0].get('Properties')[3].get('Value')
-        self._includedvolume_usage = self._data._usage_details.get('Object')[0].get('Properties')[0].get('Value')
+        self._total_volume = self._data._usage_details[self._phonenumber].get('Object')[0].get('Properties')[1].get('Value')
+        self._isunlimited = self._data._usage_details[self._phonenumber].get('Object')[0].get('Properties')[3].get('Value')
+        self._includedvolume_usage = self._data._usage_details[self._phonenumber].get('Object')[0].get('Properties')[0].get('Value')
         if self._isunlimited == '1':
-            self._used_percentage = self._data._usage_details.get('Object')[0].get('Properties')[2].get('Value')
+            self._used_percentage = self._data._usage_details[self._phonenumber].get('Object')[0].get('Properties')[2].get('Value')
         else:
             self._used_percentage = round((int(self._includedvolume_usage)/int(self._total_volume.split(" ")[0]))*100,2)
             
@@ -358,8 +361,8 @@ class ComponentInternetSensor(Entity):
             "unlimited": self._isunlimited,
             "period_start": self._period_start_date,
             "period_days_left": self._period_left,
-            "usage_details_json": self._data._usage_details,
-            "subscription_details_json": self._data._subscription_details,
+            "usage_details_json": self._data._usage_details[self._phonenumber],
+            "subscription_details_json": self._data._subscription_details[self._phonenumber],
             "country": self._country
         }
 
@@ -387,18 +390,18 @@ class ComponentInternetSensor(Entity):
         return self.unique_id
         
 class ComponentSubscriptionSensor(Entity):
-    def __init__(self, data, hass, subscription_details_index, phonenumber):
+    def __init__(self, data, hass, phonenumber):
         self._data = data
         self._hass = hass
-        self._subscription_details_index = subscription_details_index
         self._last_update = None
+        self._phonenumber = phonenumber
         # Section 21
         self._SubscriptionType = None
         self._Price = None
         self._ContractStartDate = None
         self._ContractDuration = None
         # Section 23
-        self._Msisdn = self._data._subscription_details[self._subscription_details_index][23]['Msisdn']
+        self._Msisdn = self._data._subscription_details[self._phonenumber][23]['Msisdn']
         self._PUK = None
         self._ICCShort = None
         self._MsisdnStatus = None
@@ -415,23 +418,23 @@ class ComponentSubscriptionSensor(Entity):
 
     async def async_update(self):
         await self._data.update()
-        subscription_details       = self._data._subscription_details[self._subscription_details_index]
+        subscription_details       = self._data._subscription_details[self._phonenumber]
 
         self._last_update          =  self._data._lastupdate;
         # Section 21
-        self._SubscriptionType       = subscription_details[self._subscription_details_index][21]['AbonnementType'].replace("<br/>"," - ")
-        self._Price                = subscription_details[self._subscription_details_index][21]['Price']
-        self._ContractStartDate    = subscription_details[self._subscription_details_index][21]['ContractStartDate']
-        self._ContractDuration     = subscription_details[self._subscription_details_index][21]['ContractDuration']
+        self._SubscriptionType     = subscription_details[self._phonenumber][21]['AbonnementType'].replace("<br/>"," - ")
+        self._Price                = subscription_details[self._phonenumber][21]['Price']
+        self._ContractStartDate    = subscription_details[self._phonenumber][21]['ContractStartDate']
+        self._ContractDuration     = subscription_details[self._phonenumber][21]['ContractDuration']
         # Section 23
-        self._Msisdn               = subscription_details[self._subscription_details_index][23]['Msisdn']
-        self._PUK                  = subscription_details[self._subscription_details_index][23]['PUK']
-        self._ICCShort             = subscription_details[self._subscription_details_index][23]['ICCShort']
-        self._MsisdnStatus         = subscription_details[self._subscription_details_index][23]['MsisdnStatus']
+        self._Msisdn               = subscription_details[self._phonenumber][23]['Msisdn']
+        self._PUK                  = subscription_details[self._phonenumber][23]['PUK']
+        self._ICCShort             = subscription_details[self._phonenumber][23]['ICCShort']
+        self._MsisdnStatus         = subscription_details[self._phonenumber][23]['MsisdnStatus']
         # Section 24
-        self._DataSubscription     = subscription_details[self._subscription_details_index][24]['DataSubscription']
+        self._DataSubscription     = subscription_details[self._phonenumber][24]['DataSubscription']
         # Section 26
-        self._VoiceSmsSubscription = subscription_details[self._subscription_details_index][26]['VoiceSmsSubscription']
+        self._VoiceSmsSubscription = subscription_details[self._phonenumber][26]['VoiceSmsSubscription']
         self._country = self._data._country
         
     async def async_will_remove_from_hass(self):
