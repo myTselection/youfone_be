@@ -89,6 +89,15 @@ The main logic and API connection related code can be found within source code y
 - [utils.py](https://github.com/myTselection/youfone_be/blob/master/custom_components/youfone_be/utils.py) -> mainly ComponentSession class
 
 All other files just contain boilerplat code for the integration to work wtihin HA or to have some constants/strings/translations.
+    
+
+If you would encounter some issues with this custom component, you can enable extra debug logging by adding below into your `configuration.yaml`:
+```
+logger:
+  default: info
+  logs:
+     cusomt_components.youfone_be: debug
+```
 
 ## Example usage: (using [dual gauge card](https://github.com/custom-cards/dual-gauge-card))
 ### Gauge & Markdown
