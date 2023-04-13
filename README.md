@@ -7,7 +7,7 @@
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/myTselection/youfone_be.svg)](https://github.com/myTselection/youfone_be/graphs/commit-activity)
 
 # Youfone
-[Youfone](https://www.youfone.be/) Home Assistant custom component. This custom component has been built from the ground up to bring your Youfone mobile phone usage details into Home Assistant to help you towards a better follow up on your usage information. This integration is built against the public website provided by Youfone Belgium and Netherlands. Support is provided for mulitple phone numbers within one subscription.
+[Youfone](https://www.youfone.be/) Home Assistant custom component. This custom component has been built from the ground up to bring your Youfone mobile phone usage details into Home Assistant to help you towards a better follow up on your usage information. This integration is built against the public website provided by Youfone Belgium and Netherlands. Support is provided for mulitple sim cards (phone numbers) within one account subscription.
 
 This integration is in no way affiliated with Youfone.
 
