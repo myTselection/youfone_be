@@ -137,7 +137,7 @@ cards:
       laatste update: *{{state_attr('sensor.youfone_<phonenr>_voice_sms','last update')
       | as_timestamp | timestamp_custom("%d-%m-%Y")}}*
   - type: custom:dual-gauge-card
-    title: false
+    title: 📞
     min: 0
     max: 100
     shadeInner: true
@@ -164,7 +164,7 @@ cards:
       max: 100
       unit: '%'
   - type: custom:dual-gauge-card
-    title: false
+    title: 🌐
     min: 0
     max: 100
     shadeInner: true
