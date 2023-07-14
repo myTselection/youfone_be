@@ -38,6 +38,7 @@ Some discussion on this topic can be found within [the Home Assistant community 
     | `period_start`  | Start date of the next period |
     | `period_days_left`  | Number of days left in current period |
     | `extra_costs`  | Amount of extra costs (eg when usage above volume within subscription) |
+    | `extra_costs_details`  | String with detailed info on the extra cost if available |
     | `usage_details_json`  | Json with full details of usage as received from youfone website |
     | `country`  | Country (BE or NL) |
     </details>
@@ -57,6 +58,7 @@ Some discussion on this topic can be found within [the Home Assistant community 
     | `period_start`  | Start date of the next period |
     | `period_days_left`  | Number of days left in current period |
     | `extra_costs`  | Amount of extra costs (eg when usage above volume within subscription) |
+    | `extra_costs_details`  | String with detailed info on the extra cost if available |
     | `usage_details_json`  | Json with full details of usage as received from youfone website | 
     | `country`  | Country (BE or NL) |
     </details>
@@ -123,6 +125,9 @@ cards:
       ({{state_attr('sensor.youfone_<phonenr>_internet','includedvolume_usage')}} van
       {{state_attr('sensor.youfone_<phonenr>_internet','total_volume')}})
 
+      ### Totaal extra kosten: {{state_attr('sensor.youfone_<phonenr>_internet','extra_costs')}}€: 
+      {{state_attr('sensor.youfone_<phonenr>_internet','extra_costs_details')}}
+
       #### {{state_attr('sensor.youfone_<phonenr>_voice_sms','period_days_left')|int}}
       dagen resterend
       ({{((state_attr('sensor.youfone_<phonenr>_voice_sms','total_volume')|replace('
@@ -158,9 +163,37 @@ cards:
       min: 0
       max: 100
       unit: '%'
+  - type: custom:dual-gauge-card
+    title: false
+    min: 0
+    max: 100
+    shadeInner: true
+    cardwidth: 350
+    outer:
+      entity: sensor.youfone_<phonenr>_internet
+      attribute: used_percentage
+      label: used
+      min: 0
+      max: 100
+      unit: '%'
+      colors:
+        - color: var(--label-badge-green)
+          value: 0
+        - color: var(--label-badge-yellow)
+          value: 60
+        - color: var(--label-badge-red)
+          value: 80
+    inner:
+      entity: sensor.youfone_<phonenr>_internet
+      label: period
+      attribute: period_used_percentage
+      min: 0
+      max: 100
+      unit: '%'
   - type: history-graph
     entities:
       - entity: sensor.youfone_<phonenr>_voice_sms
+      - entity: sensor.youfone_<phonenr>_internet
     hours_to_show: 500
     refresh_interval: 60
 ```

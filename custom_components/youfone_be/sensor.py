@@ -156,6 +156,7 @@ class ComponentMobileSensor(Entity):
         self._total_volume = None
         self._isunlimited = None
         self._extracosts = None
+        self._extracosts_details = None
         self._used_percentage = None
         self._period_used_percentage = None
         self._phonenumber = phonenumber
@@ -207,6 +208,8 @@ class ComponentMobileSensor(Entity):
             self._extracosts = self._data._usage_details[self._phonenumber].get('Object')[3].get('Properties')[0].get('Value')
         except IndexError: 
             self._extracosts = 0
+        if self._extracosts != 0:
+            self._extracosts_details = ", ".join(f"€{obj['Costs']} ({obj['Description']} - {obj['UsedAmount']})" for obj in self._data._usage_details[self._phonenumber].get('extra').get('Object'))
             
             
         
@@ -247,6 +250,7 @@ class ComponentMobileSensor(Entity):
             "period_start": self._period_start_date,
             "period_days_left": self._period_left,
             "extra_costs": self._extracosts,
+            "extra_costs_details": self._extracosts_details,
             "user_details_json": self._data._user_details,
             "usage_details_json": self._data._usage_details[self._phonenumber],
             "subscription_details_json": self._data._subscription_details[self._phonenumber],
@@ -287,6 +291,8 @@ class ComponentInternetSensor(Entity):
         self._period_left = None
         self._total_volume = None
         self._isunlimited = None
+        self._extracosts = None
+        self._extracosts_details = None
         self._period_used_percentage = None
         self._used_percentage = None
         self._includedvolume_usage = None
@@ -323,6 +329,13 @@ class ComponentInternetSensor(Entity):
             self._used_percentage = self._data._usage_details[self._phonenumber].get('Object')[0].get('Properties')[2].get('Value')
         else:
             self._used_percentage = round((int(self._includedvolume_usage)/int(self._total_volume.split(" ")[0]))*100,2)
+        try:
+            self._extracosts = self._data._usage_details[self._phonenumber].get('Object')[3].get('Properties')[0].get('Value')
+        except IndexError: 
+            self._extracosts = 0
+        if self._extracosts != 0:
+            self._extracosts_details = ", ".join(f"€{obj['Costs']} ({obj['Description']} - {obj['UsedAmount']})" for obj in self._data._usage_details[self._phonenumber].get('extra').get('Object'))
+            
             
         
     async def async_will_remove_from_hass(self):
@@ -361,6 +374,8 @@ class ComponentInternetSensor(Entity):
             "unlimited": self._isunlimited,
             "period_start": self._period_start_date,
             "period_days_left": self._period_left,
+            "extra_costs": self._extracosts,
+            "extra_costs_details": self._extracosts_details,
             "usage_details_json": self._data._usage_details[self._phonenumber],
             "subscription_details_json": self._data._subscription_details[self._phonenumber],
             "country": self._country

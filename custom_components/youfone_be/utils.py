@@ -73,7 +73,17 @@ class ComponentSession(object):
             _LOGGER.debug("youfone.be  result status code: " + str(response.status_code) + ", msisdn: " + str(msisdn))
             _LOGGER.debug("youfone.be  result " + response.text)
             assert response.status_code == 200
-            usage_details_data[msisdn]= response.json()
+            current_user_details = response.json()
+            
+            #fetch extra cost details
+            response = self.s.get(f"https://my.youfone.{self._country}/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/GetOverviewMsisdnExtraCosts",data='{"request": {"Msisdn": '+str(msisdn)+'}}',headers=header,timeout=10)
+            self.s.headers["securitykey"] = response.headers.get('securitykey')
+            _LOGGER.debug("youfone.be  result status code: " + str(response.status_code) + ", msisdn: " + str(msisdn))
+            _LOGGER.debug("youfone.be  result " + response.text)
+            assert response.status_code == 200
+            current_user_details['extra'] = response.json()
+            _LOGGER.debug(f"youfone.be  current_user_details {current_user_details}")
+            usage_details_data[msisdn]= current_user_details
         return usage_details_data
         
     def subscription_details(self):
