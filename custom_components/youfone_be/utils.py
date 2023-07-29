@@ -31,8 +31,9 @@ def check_settings(config, hass):
 class ComponentSession(object):
     def __init__(self, country):
         self.s = requests.Session()
-        self.s.headers["User-Agent"] = "Python/3"
+        self.s.headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
         self.s.headers["referer"] = f"https://my.youfone.{country.lower()}/login"
+        self.s.headers["Origin"] = f"https://my.youfone.{country.lower()}"
         self.userdetails = None
         self.msisdn = dict()
         self._country = country.lower()
@@ -50,7 +51,7 @@ class ComponentSession(object):
     # {"Message":"Authorization succes","ResultCode":0,"Object":{"Customer":{"CustomerNumber":9223283432,"Email":"eslkdjflksd@gmail.com","FirstName":"slfjs","Gender":null,"Id":3434,"Initials":"I","IsBusinessCustomer":false,"Language":"nl","LastName":"DSFSDF","PhoneNumber":"0412345678","Prefix":null,"RoleId":2},"Customers":[{"CustomerId":12345,"CustomerNumber":1234567890,"IsDefaultCustomer":true,"Msisdn":32412345678,"ProvisioningTypeId":1,"RoleId":2}],"CustomersCount":1}}
         # Get OAuth2 state / nonce
         header = {"Content-Type": "application/json"}
-        response = self.s.post(f"https://my.youfone.{self._country}/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/login",data='{"request": {"Login": "'+username+'", "Password": "'+password+'"}}',headers=header,timeout=10)
+        response = self.s.post(f"https://my.youfone.{self._country}/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/login",data='{"request": {"Login": "'+username+'", "Password": "'+password+'"}}',headers=header,timeout=30)
         _LOGGER.debug("youfone.be login post result status code: " + str(response.status_code) + ", response: " + response.text)
         _LOGGER.debug("youfone.be login header: " + str(response.headers))
         assert response.status_code == 200
@@ -68,7 +69,7 @@ class ComponentSession(object):
         usage_details_data = dict()
         header = {"Content-Type": "application/json"}
         for msisdn in self.msisdn.keys():
-            response = self.s.get(f"https://my.youfone.{self._country}/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/GetOverviewMsisdnInfo",data='{"request": {"Msisdn": '+str(msisdn)+'}}',headers=header,timeout=10)
+            response = self.s.get(f"https://my.youfone.{self._country}/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/GetOverviewMsisdnInfo",data='{"request": {"Msisdn": '+str(msisdn)+'}}',headers=header,timeout=30)
             self.s.headers["securitykey"] = response.headers.get('securitykey')
             _LOGGER.debug("youfone.be  result status code: " + str(response.status_code) + ", msisdn: " + str(msisdn))
             _LOGGER.debug("youfone.be  result " + response.text)
@@ -76,7 +77,7 @@ class ComponentSession(object):
             current_user_details = response.json()
             
             #fetch extra cost details
-            response = self.s.get(f"https://my.youfone.{self._country}/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/GetOverviewMsisdnExtraCosts",data='{"request": {"Msisdn": '+str(msisdn)+'}}',headers=header,timeout=10)
+            response = self.s.get(f"https://my.youfone.{self._country}/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/GetOverviewMsisdnExtraCosts",data='{"request": {"Msisdn": '+str(msisdn)+'}}',headers=header,timeout=30)
             self.s.headers["securitykey"] = response.headers.get('securitykey')
             _LOGGER.debug("youfone.be  result status code: " + str(response.status_code) + ", msisdn: " + str(msisdn))
             _LOGGER.debug("youfone.be  result " + response.text)
@@ -90,7 +91,7 @@ class ComponentSession(object):
         subscription_details_data = dict()
         header = {"Content-Type": "application/json"}
         for msisdn in self.msisdn.keys():
-            response = self.s.get(f"https://my.youfone.{self._country}/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/GetAbonnementMsisdnInfo",data='{"request": {"Msisdn": '+str(msisdn)+'}}',headers=header,timeout=10)
+            response = self.s.get(f"https://my.youfone.{self._country}/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/GetAbonnementMsisdnInfo",data='{"request": {"Msisdn": '+str(msisdn)+'}}',headers=header,timeout=30)
             self.s.headers["securitykey"] = response.headers.get('securitykey')
             _LOGGER.debug("youfone.be  result status code: " + str(response.status_code) + ", msisdn: " + str(msisdn))
             _LOGGER.debug("youfone.be  result " + response.text)
