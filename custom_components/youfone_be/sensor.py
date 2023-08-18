@@ -131,7 +131,7 @@ class ComponentData:
             self._usage_details = await self._hass.async_add_executor_job(lambda: self._session.usage_details())
             _LOGGER.debug(f"{NAME} init usage_details data: {self._usage_details}")
             self._subscription_details = await self._hass.async_add_executor_job(lambda: self._session.subscription_details())
-            _LOGGER.debug(f"{NAME} init usage_details data: {self._subscription_details}")
+            _LOGGER.debug(f"{NAME} init subscription_details data: {self._subscription_details}")
             self._lastupdate = datetime.now()
                 
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
