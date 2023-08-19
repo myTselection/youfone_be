@@ -107,94 +107,116 @@ logger:
 <details><summary>Click to show Mardown code example</summary>
 
 ```
-type: vertical-stack
-cards:
-  - type: markdown
-    content: >-
-      ## <img
-      src="https://raw.githubusercontent.com/myTselection/youfone_be/master/icon.png"
-      width="30"/>&nbsp;&nbsp;Youfone
-      {{state_attr('sensor.youfone_<phonenr>_voice_sms','phone_number')}}
+type: conditional
+conditions:
+  - entity: input_boolean.lana_details
+    state: 'on'
+card:
+  type: vertical-stack
+  cards:
+    - type: markdown
+      content: >-
+        ## <img
+        src="https://raw.githubusercontent.com/myTselection/youfone_be/master/icon.png"
+        width="30"/>&nbsp;&nbsp;Youfone <Name>
+        ({{state_attr('sensor.youfone_<phonenr>_voice_sms','phone_number') |
+        replace('32','0')}})
 
 
-      ### Totaal bel/sms verbruikt: {{states('sensor.youfone_<phonenr>_voice_sms')}}%
-      ({{state_attr('sensor.youfone_<phonenr>_voice_sms','includedvolume_usage')}} van
-      {{state_attr('sensor.youfone_<phonenr>_voice_sms','total_volume')}})
+        ### Totaal bel/sms verbruikt:
+        {{states('sensor.youfone_<phonenr>_voice_sms')}}%
+        ({{state_attr('sensor.youfone_<phonenr>_voice_sms','includedvolume_usage')}}
+        van
+        {{state_attr('sensor.youfone_<phonenr>_voice_sms','total_volume')}})
 
-      ### Totaal data verbruikt: {{states('sensor.youfone_be_<phonenr>_internet')}}%
-      ({{state_attr('sensor.youfone_<phonenr>_internet','includedvolume_usage')}} van
-      {{state_attr('sensor.youfone_<phonenr>_internet','total_volume')}})
+        ### Totaal data verbruikt:
+        {{states('sensor.youfone_<phonenr>_internet')}}%
+        ({{state_attr('sensor.youfone_<phonenr>_internet','includedvolume_usage')}}
+        van
+        {{state_attr('sensor.youfone_<phonenr>_internet','total_volume')}})
 
-      ### Totaal extra kosten: {{state_attr('sensor.youfone_<phonenr>_internet','extra_costs')}}€: 
-      {{state_attr('sensor.youfone_<phonenr>_internet','extra_costs_details')}}
+        ### Totaal extra kosten:
+        {{state_attr('sensor.youfone_<phonenr>_voice_sms','extra_costs')}}€
 
-      #### {{state_attr('sensor.youfone_<phonenr>_voice_sms','period_days_left')|int}}
-      dagen resterend
-      ({{((state_attr('sensor.youfone_<phonenr>_voice_sms','total_volume')|replace('
-      Min','')) or 0)|int -
-      (state_attr('sensor.youfone_<phonenr>_voice_sms','includedvolume_usage') or
-      0)|int}} Min)
-      laatste update: *{{state_attr('sensor.youfone_<phonenr>_voice_sms','last update')
-      | as_timestamp | timestamp_custom("%d-%m-%Y")}}*
-  - type: custom:dual-gauge-card
-    title: 📞
-    min: 0
-    max: 100
-    shadeInner: true
-    cardwidth: 350
-    outer:
-      entity: sensor.youfone_<phonenr>_voice_sms
-      attribute: used_percentage
-      label: used
+        {{state_attr('sensor.youfone_<phonenr>_voice_sms','extra_costs_details')}}
+
+        ####
+        {{state_attr('sensor.youfone_<phonenr>_voice_sms','period_days_left')|int}}
+        dagen resterend
+        ({{((state_attr('sensor.youfone_<phonenr>_voice_sms','total_volume')|replace('
+        Min','')) or 0)|int -
+        (state_attr('sensor.youfone_<phonenr>_voice_sms','includedvolume_usage')
+        or 0)|int}} Min,
+        {{((state_attr('sensor.youfone_<phonenr>_internet','total_volume')|replace('
+        MB','')) or 0)|int -
+        (state_attr('sensor.youfone_<phonenr>_internet','includedvolume_usage')
+        or 0)|int}} MB)
+
+
+
+        laatste update:
+        *{{state_attr('sensor.youfone_<phonenr>_voice_sms','last update') |
+        as_timestamp | timestamp_custom("%d-%m-%Y %H:%M")}}*
+         
+    - type: custom:dual-gauge-card
+      title: 📞
       min: 0
       max: 100
-      unit: '%'
-      colors:
-        - color: var(--label-badge-green)
-          value: 0
-        - color: var(--label-badge-yellow)
-          value: 60
-        - color: var(--label-badge-red)
-          value: 80
-    inner:
-      entity: sensor.youfone_<phonenr>_voice_sms
-      label: period
-      attribute: period_used_percentage
+      shadeInner: true
+      cardwidth: 350
+      outer:
+        entity: sensor.youfone_<phonenr>_voice_sms
+        attribute: used_percentage
+        label: used
+        min: 0
+        max: 100
+        unit: '%'
+        colors:
+          - color: var(--label-badge-green)
+            value: 0
+          - color: var(--label-badge-yellow)
+            value: 60
+          - color: var(--label-badge-red)
+            value: 80
+      inner:
+        entity: sensor.youfone_<phonenr>_voice_sms
+        label: period
+        attribute: period_used_percentage
+        min: 0
+        max: 100
+        unit: '%'
+    - type: custom:dual-gauge-card
+      title: 🌐
       min: 0
       max: 100
-      unit: '%'
-  - type: custom:dual-gauge-card
-    title: 🌐
-    min: 0
-    max: 100
-    shadeInner: true
-    cardwidth: 350
-    outer:
-      entity: sensor.youfone_<phonenr>_internet
-      attribute: used_percentage
-      label: used
-      min: 0
-      max: 100
-      unit: '%'
-      colors:
-        - color: var(--label-badge-green)
-          value: 0
-        - color: var(--label-badge-yellow)
-          value: 60
-        - color: var(--label-badge-red)
-          value: 80
-    inner:
-      entity: sensor.youfone_<phonenr>_internet
-      label: period
-      attribute: period_used_percentage
-      min: 0
-      max: 100
-      unit: '%'
-  - type: history-graph
-    entities:
-      - entity: sensor.youfone_<phonenr>_voice_sms
-      - entity: sensor.youfone_<phonenr>_internet
-    hours_to_show: 500
-    refresh_interval: 60
+      shadeInner: true
+      cardwidth: 350
+      outer:
+        entity: sensor.youfone_<phonenr>_internet
+        attribute: used_percentage
+        label: used
+        min: 0
+        max: 100
+        unit: '%'
+        colors:
+          - color: var(--label-badge-green)
+            value: 0
+          - color: var(--label-badge-yellow)
+            value: 60
+          - color: var(--label-badge-red)
+            value: 80
+      inner:
+        entity: sensor.youfone_<phonenr>_internet
+        label: period
+        attribute: period_used_percentage
+        min: 0
+        max: 100
+        unit: '%'
+    - type: history-graph
+      entities:
+        - entity: sensor.youfone_<phonenr>_voice_sms
+        - entity: sensor.youfone_<phonenr>_internet
+      hours_to_show: 500
+      refresh_interval: 60
 ```
 </details>
