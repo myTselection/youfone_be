@@ -69,6 +69,24 @@ class ComponentSession(object):
         self._country = country.lower()
         self.loginSecurityKey = ""
 
+    def initSession(self):
+        self.s = httpx.Client(http2=True)
+        self.s.headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
+        self.s.headers["Referer"] = f"https://my.youfone.{self._country.lower()}/login"
+        self.s.headers["Origin"] = f"https://my.youfone.{self._country.lower()}"
+        # self.s.headers["Sec-Ch-Ua"] = f'"Chromium";v="116", "Not)A;Brand";v="24", "Google Chrome";v="116"'
+        # self.s.headers["Sec-Ch-Ua-Platform"] = f'"Windows"'
+        # self.s.headers["Sec-Ch-Ua-Mobile"] = f'?0'
+        # self.s.headers["Sec-Fetch-Dest"] = f'empty'
+        # self.s.headers["Sec-Fetch-Mode"] = f'cors'
+        # self.s.headers["Sec-Fetch-Site"] = f'same-origin'
+        # self.s.headers["Accept-Language"] = f'en-US,en;q=0.9'
+        self.userdetails = None
+        self.msisdn = dict()
+        self.customerid = dict()
+        self.loginSecurityKey = ""
+
+
     def login(self, username, password):
     # https://my.youfone.be/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/login, POST
     # example payload
@@ -100,7 +118,7 @@ class ComponentSession(object):
         # _LOGGER.debug(f"response2: {response2.text}")
         # response = response2
         # _LOGGER.debug("youfone.be login post result status code: " + str(response.status_code) + ", response: " + response.text)
-
+        self.initSession()
 
         header = {"Content-Type": "application/json"}
         response = self.s.get(f"https://my.youfone.{self._country}/login",headers=header,timeout=30)
