@@ -18,6 +18,7 @@ Some discussion on this topic can be found within [the Home Assistant community 
 
 ## Installation
 - [HACS](https://hacs.xyz/): HACS > Integration > search for Youfone and install
+    - [![Open your Home Assistant instance and open the repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg?style=flat-square)](https://my.home-assistant.io/redirect/hacs_repository/?owner=myTselection&repository=youfone_be&category=integration)
 - Restart Home Assistant
 - Add 'Youfone.be' integration via HA Settings > 'Devices and Services' > 'Integrations'
 - Provide Youfone.be username and password and country (BE or NL)
