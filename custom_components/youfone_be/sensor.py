@@ -8,7 +8,7 @@ import voluptuous as vol
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import ATTR_ATTRIBUTION
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity import Entity, DeviceInfo
 from homeassistant.util import Throttle
 from homeassistant.const import (
     CONF_NAME,
@@ -145,6 +145,16 @@ class ComponentData:
         self._session : None
 
 
+    @property
+    def unique_id(self):
+        return f"{NAME} {self._username}"
+    @property
+    def name(self) -> str:
+        """Return the name of the sensor."""
+        return self.unique_id
+
+
+
 
 class ComponentMobileSensor(Entity):
     def __init__(self, data, hass, phonenumber):
@@ -233,7 +243,7 @@ class ComponentMobileSensor(Entity):
 
     @property
     def name(self) -> str:
-        return self.unique_id
+        return f"{self._phonenumber} voice sms"
 
     @property
     def extra_state_attributes(self) -> dict:
@@ -258,13 +268,16 @@ class ComponentMobileSensor(Entity):
         }
 
     @property
-    def device_info(self) -> dict:
-        """I can't remember why this was needed :D"""
-        return {
-            "identifiers": {(DOMAIN, self.unique_id)},
-            "name": self.name,
-            "manufacturer": DOMAIN,
-        }
+    def device_info(self) -> DeviceInfo:
+        """Return the device info."""
+        return DeviceInfo(
+            identifiers={
+                # Serial numbers are unique identifiers within a specific domain
+                (NAME, self._data.unique_id)
+            },
+            name=self._data.name,
+            manufacturer= NAME
+        )
 
     @property
     def unit(self) -> int:
@@ -358,7 +371,7 @@ class ComponentInternetSensor(Entity):
 
     @property
     def name(self) -> str:
-        return self.unique_id
+        return f"{self._phonenumber} internet"
 
     @property
     def extra_state_attributes(self) -> dict:
@@ -382,13 +395,17 @@ class ComponentInternetSensor(Entity):
         }
 
     @property
-    def device_info(self) -> dict:
-        """I can't remember why this was needed :D"""
-        return {
-            "identifiers": {(DOMAIN, self.unique_id)},
-            "name": self.name,
-            "manufacturer": DOMAIN,
-        }
+    def device_info(self) -> DeviceInfo:
+        """Return the device info."""
+        return DeviceInfo(
+            identifiers={
+                # Serial numbers are unique identifiers within a specific domain
+                (NAME, self._data.unique_id)
+            },
+            name=self._data.name,
+            manufacturer= NAME
+        )
+
 
     @property
     def unit(self) -> int:
@@ -472,7 +489,7 @@ class ComponentSubscriptionSensor(Entity):
 
     @property
     def name(self) -> str:
-        return self.unique_id
+        return f"{self._Msisdn} subscription info"
 
     @property
     def extra_state_attributes(self) -> dict:
@@ -497,13 +514,17 @@ class ComponentSubscriptionSensor(Entity):
         }
 
     @property
-    def device_info(self) -> dict:
-        """I can't remember why this was needed :D"""
-        return {
-            "identifiers": {(DOMAIN, self.unique_id)},
-            "name": self.name,
-            "manufacturer": DOMAIN,
-        }
+    def device_info(self) -> DeviceInfo:
+        """Return the device info."""
+        return DeviceInfo(
+            identifiers={
+                # Serial numbers are unique identifiers within a specific domain
+                (NAME, self._data.unique_id)
+            },
+            name=self._data.name,
+            manufacturer= NAME
+        )
+
 
     @property
     def unit(self) -> str:
