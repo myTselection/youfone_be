@@ -484,12 +484,12 @@ class ComponentSubscriptionSensor(Entity):
     def unique_id(self) -> str:
         """Return the name of the sensor."""
         return (
-            f"{NAME} {self._Msisdn} subscription info"
+            f"{NAME} {self._phonenumber} subscription info"
         )
 
     @property
     def name(self) -> str:
-        return f"{self._Msisdn} subscription info"
+        return f"{self._phonenumber} subscription info"
 
     @property
     def extra_state_attributes(self) -> dict:
