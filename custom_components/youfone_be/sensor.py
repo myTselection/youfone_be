@@ -243,7 +243,7 @@ class ComponentMobileSensor(Entity):
 
     @property
     def name(self) -> str:
-        return f"{self._phonenumber} voice sms"
+        return self.unique_id
 
     @property
     def extra_state_attributes(self) -> dict:
@@ -371,7 +371,7 @@ class ComponentInternetSensor(Entity):
 
     @property
     def name(self) -> str:
-        return f"{self._phonenumber} internet"
+        return self.unique_id
 
     @property
     def extra_state_attributes(self) -> dict:
@@ -489,7 +489,7 @@ class ComponentSubscriptionSensor(Entity):
 
     @property
     def name(self) -> str:
-        return f"{self._phonenumber} subscription info"
+        return self.unique_id
 
     @property
     def extra_state_attributes(self) -> dict:
