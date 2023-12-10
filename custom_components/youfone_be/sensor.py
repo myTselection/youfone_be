@@ -36,6 +36,15 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=15)
 
 
+def seconds_in_month(year, month):
+    # Get the number of days in the given month
+    days_in_month = calendar.monthrange(year, month)[1]
+    
+    # Calculate the total number of seconds in the month
+    seconds_in_month = days_in_month * 24 * 60 * 60
+    
+    return seconds_in_month
+
 async def dry_setup(hass, config_entry, async_add_devices):
     config = config_entry
     username = config.get(CONF_USERNAME)
@@ -201,7 +210,7 @@ class ComponentMobileSensor(Entity):
         days_in_month = (first_day_of_month.replace(month=first_day_of_month.month % 12 + 1, day=1) - timedelta(days=1)).day
 
         # Get the number of days completed so far as a fraction of days
-        total_seconds_in_month = (first_day_of_month.replace(month=first_day_of_month.month % 12 + 1, day=1) - first_day_of_month).total_seconds()
+        total_seconds_in_month = seconds_in_month(now.year, now.month)
         seconds_completed = (now - first_day_of_month).total_seconds()
         days_completed = seconds_completed / total_seconds_in_month
         self._period_used_percentage = round(100 * days_completed,1)
@@ -323,17 +332,24 @@ class ComponentInternetSensor(Entity):
         self._country = self._data._country
         
         self._period_start_date = self._data._usage_details[self._phonenumber].get('Object')[2].get('Properties')[0].get('Value')
+        _LOGGER.debug(f"self._period_start_date {self._period_start_date}")
         self._period_left = int(self._data._usage_details[self._phonenumber].get('Object')[2].get('Properties')[1].get('Value'))
+        _LOGGER.debug(f"self._period_left {self._period_left}")
         now = datetime.now()
         first_day_of_month = datetime(now.year, now.month, 1)
+        _LOGGER.debug(f"first_day_of_month {first_day_of_month}")
         # Get the total number of days in the current month
         days_in_month = (first_day_of_month.replace(month=first_day_of_month.month % 12 + 1, day=1) - timedelta(days=1)).day
 
         # Get the number of days completed so far as a fraction of days
-        total_seconds_in_month = (first_day_of_month.replace(month=first_day_of_month.month % 12 + 1, day=1) - first_day_of_month).total_seconds()
+        total_seconds_in_month = seconds_in_month(now.year, now.month)
+        _LOGGER.debug(f"total_seconds_in_month {total_seconds_in_month}")
         seconds_completed = (now - first_day_of_month).total_seconds()
+        _LOGGER.debug(f"seconds_completed {seconds_completed}")
         days_completed = seconds_completed / total_seconds_in_month
+        _LOGGER.debug(f"days_completed {days_completed}")
         self._period_used_percentage = round(100 * days_completed,1)
+        _LOGGER.debug(f"_period_used_percentage {self._period_used_percentage}")
         
         self._total_volume = self._data._usage_details[self._phonenumber].get('Object')[0].get('Properties')[1].get('Value')
         self._isunlimited = self._data._usage_details[self._phonenumber].get('Object')[0].get('Properties')[3].get('Value')
@@ -348,7 +364,6 @@ class ComponentInternetSensor(Entity):
             self._extracosts = 0
         if self._extracosts != 0:
             self._extracosts_details = ", ".join(f"€{obj['Costs']} ({obj['Description']} - {obj['UsedAmount']})" for obj in self._data._usage_details[self._phonenumber].get('extra').get('Object'))
-            
             
         
     async def async_will_remove_from_hass(self):
