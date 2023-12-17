@@ -7,6 +7,8 @@ from typing import List
 import requests
 from pydantic import BaseModel
 import httpx
+import time
+import random
 
 import voluptuous as vol
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -123,8 +125,14 @@ class ComponentSession(object):
         header = {"Content-Type": "application/json"}
         response = self.s.get(f"https://my.youfone.{self._country}/login",headers=header,timeout=30)
         _LOGGER.debug("youfone.be result status code: " + str(response.status_code) + ", response: " + response.text)
+        # sleep random number of seconds, trying to avoid IP blacklisting
+        time.sleep(random.uniform(1, 10))
+
         response = self.s.get(f"https://my.youfone.{self._country}/assets/i18n/nl.json",headers=header,timeout=30)
         _LOGGER.debug("youfone.be result status code: " + str(response.status_code) + ", response: " + response.text)
+        # sleep random number of seconds, trying to avoid IP blacklisting
+        time.sleep(random.uniform(1, 10))
+
         response = self.s.get(f"https://api.youfone.{self._country}/api/getPageBlocks?page_url=/login",headers=header,timeout=10)
         _LOGGER.debug("youfone.be result status code: " + str(response.status_code) + ", response: " + response.text)
         _LOGGER.debug(f"youfone.be cookeis: {self.s.cookies}")
@@ -134,6 +142,9 @@ class ComponentSession(object):
         _LOGGER.debug("Headers:")
         for key, value in self.s.headers.items():
             _LOGGER.debug(f"{key}: {value}")
+        # sleep random number of seconds, trying to avoid IP blacklisting
+        time.sleep(random.uniform(1, 10))
+
         response = self.s.post(f"https://my.youfone.{self._country}/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/login",content='{"request": {"Login": "'+username+'", "Password": "'+password+'", "remember_me": "false"}}',headers=header,timeout=30)
 
 
@@ -160,6 +171,9 @@ class ComponentSession(object):
         for msisdn in self.msisdn.keys():
             _LOGGER.debug(f"youfone.be before securitykey {self.s.headers['securitykey']}")
             self.s.headers["Referer"] = f"https://my.youfone.{self._country}/login"
+            # sleep random number of seconds, trying to avoid IP blacklisting
+            time.sleep(random.uniform(1, 10))
+
             response = self.s.post(f"https://my.youfone.{self._country}/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/GetNotifications",content='{"request":{"CustomerId":'+str(self.customerid.get(msisdn))+'}}',headers=header,timeout=30)
             _LOGGER.debug("youfone.be GetNotifications result status code: " + str(response.status_code) + ", response: " + response.text)
             _LOGGER.debug(f"youfone.be securitykey {response.headers.get('securitykey')}")
@@ -167,6 +181,9 @@ class ComponentSession(object):
             self.s.headers["securitykey"] = self.loginSecurityKey
             self.s.headers["Referer"] = f"https://my.youfone.{self._country}/"
             _LOGGER.debug(f"youfone.be before securitykey {self.s.headers['securitykey']} params {str(msisdn)}, self.s.headers['Referer']: {self.s.headers['Referer']}")
+            
+            # sleep random number of seconds, trying to avoid IP blacklisting
+            time.sleep(random.uniform(1, 10))
             response = self.s.post(f"https://my.youfone.{self._country}/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/GetOverviewMsisdnInfo",content='{"request":{"Msisdn":'+str(msisdn)+'}}',headers=header,timeout=30)
             _LOGGER.debug("youfone.be GetOverviewMsisdnInfo result status code: " + str(response.status_code) + ", response: " + response.text)
             _LOGGER.debug(f"youfone.be securitykey {response.headers.get('securitykey')}")
@@ -175,6 +192,9 @@ class ComponentSession(object):
             _LOGGER.debug("youfone.be  result " + response.text)
             assert response.status_code == 200
             current_user_details = response.json()
+            
+            # sleep random number of seconds, trying to avoid IP blacklisting
+            time.sleep(random.uniform(1, 10))
             
             #fetch extra cost details
             response = self.s.post(f"https://my.youfone.{self._country}/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/GetOverviewMsisdnExtraCosts",content='{"request":{"Msisdn":'+str(msisdn)+'}}',headers=header,timeout=30)
@@ -192,6 +212,9 @@ class ComponentSession(object):
         subscription_details_data = dict()
         header = {"Content-Type": "application/json"}
         for msisdn in self.msisdn.keys():
+            
+            # sleep random number of seconds, trying to avoid IP blacklisting
+            time.sleep(random.uniform(1, 10))
             response = self.s.post(f"https://my.youfone.{self._country}/prov/MyYoufone/MyYOufone.Wcf/v2.0/Service.svc/json/GetAbonnementMsisdnInfo",content='{"request": {"Msisdn": '+str(msisdn)+'}}',headers=header,timeout=30)
             _LOGGER.debug(f"youfone.be securitykey {response.headers.get('securitykey')}")
             self.s.headers["securitykey"] = response.headers.get('securitykey')
