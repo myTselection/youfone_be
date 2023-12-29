@@ -2,6 +2,7 @@ import logging
 import asyncio
 from datetime import date, datetime, timedelta
 import calendar
+import random
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
