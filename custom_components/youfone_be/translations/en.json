@@ -6,14 +6,18 @@
                 "description": "Setup a Youfone.be sensor, username and password are required.",
                 "data": {
                     "username": "Username",
-                    "password": "Password"
+                    "password": "Password",
+                    "country": "Country BE/NL",
+                    "data_refresh_timeout": "Data refresh timeout in minutes"
                 }
             },
             "edit": {
                 "description": "Setup a Youfone.be sensor, username and password are required.",
                 "data": {
                     "username": "Username",
-                    "password": "Password"
+                    "password": "Password",
+                    "country": "Country BE/NL",
+                    "data_refresh_timeout": "Data refresh timeout in minutes"
                 }
             }
 
@@ -31,7 +35,9 @@
                 "description": "Setup a Youfone.be sensor, username and password are required.",
                 "data": {
                     "username": "Username",
-                    "password": "Password"
+                    "password": "Password",
+                    "country": "Country BE/NL",
+                    "data_refresh_timeout": "Data refresh timeout in minutes"
                 }
             }
         },

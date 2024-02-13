@@ -30,24 +30,49 @@ def create_schema(entry, option=False):
         default_username = entry.data.get(CONF_USERNAME, "")
         default_password = entry.data.get(CONF_PASSWORD, "")
         default_country = entry.data.get("country", "BE")
+        default_data_refresh_timeout = entry.data.get("data_refresh_timeout", 120)
     else:
         default_username = ""
         default_password = ""
         default_country = "BE"
+        default_data_refresh_timeout = 120
 
     data_schema = OrderedDict()
     data_schema[
-        vol.Required(CONF_USERNAME, description="username")
+        vol.Required(CONF_USERNAME, description="Username")
     ] = str
     data_schema[
-        vol.Required(CONF_PASSWORD, description="password")
+        vol.Required(CONF_PASSWORD, description="Password")
     ] = str
     data_schema[
-        vol.Optional("country", default=default_country, description="country")
+        vol.Optional("country", default=default_country, description="Country")
     ] = vol.In({"NL":"NL","BE":"BE"})
+    data_schema[
+        vol.Optional("data_refresh_timeout", default=default_data_refresh_timeout, description="Data refresh timeout")
+    ] = int
 
     return data_schema
 
+
+def create_update_schema(entry, option=False):
+    """Create an update schema based on if a option or if settings
+    is already filled out.
+    """
+
+    if option:
+        # We use .get here incase some of the texts gets changed.
+        default_data_refresh_timeout = entry.data.get("data_refresh_timeout", 120)
+    else:
+        default_data_refresh_timeout = 120
+
+    data_schema = OrderedDict()
+    data_schema[
+        vol.Optional("data_refresh_timeout", default=default_data_refresh_timeout, description="Data refresh timeout")
+    ] = int
+    
+    _LOGGER.debug(f"create_update_schema data_schema: {data_schema}")
+
+    return data_schema
 
 class Mixin:
     async def test_setup(self, user_input):
@@ -117,11 +142,11 @@ class ComponentFlowHandler(Mixin, config_entries.ConfigFlow, domain=DOMAIN):
         """
         return self.async_create_entry(title="configuration.yaml", data={})
 
-    # @staticmethod
-    # @callback
-    # def async_get_options_flow(config_entry):  # TODO
-    #     """Get the options flow for this handler."""
-    #     return ComponentOptionsHandler(config_entry)
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):  # TODO
+        """Get the options flow for this handler."""
+        return ComponentOptionsHandler(config_entry)
 
 
 class ComponentOptionsHandler(config_entries.OptionsFlow, Mixin):
@@ -137,26 +162,17 @@ class ComponentOptionsHandler(config_entries.OptionsFlow, Mixin):
 
         return self.async_show_form(
             step_id="edit",
-            data_schema=vol.Schema(create_schema(self.config_entry, option=True)),
+            data_schema=vol.Schema(create_update_schema(self.config_entry, option=True)),
             errors=self._errors,
         )
 
     async def async_step_edit(self, user_input):
         # edit does not work.
         if user_input is not None:
-            await self.test_setup(user_input)
-            if ok:
-                self.hass.config_entries.async_update_entry(
-                    self.config_entry, data=user_input
-                )
-                return self.async_create_entry(title="", data={})
-            else:
-                self._errors["base"] = "missing data options handler"
-                # not suere this should be config_entry or user_input.
-                return self.async_show_form(
-                    step_id="edit",
-                    data_schema=vol.Schema(
-                        create_schema(self.config_entry, option=True)
-                    ),
-                    errors=self._errors,
-                )
+            user_input["username"] = self.config_entry.data.get("username", "")
+            user_input["password"] = self.config_entry.data.get("password", "")
+            user_input["country"] = self.config_entry.data.get("country", "BE")
+            self.hass.config_entries.async_update_entry(
+                self.config_entry, data=user_input
+            )
+            return self.async_create_entry(title=None, data=None)

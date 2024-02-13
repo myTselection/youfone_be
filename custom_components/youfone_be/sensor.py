@@ -8,9 +8,7 @@ import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import ATTR_ATTRIBUTION
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity, DeviceInfo
-from homeassistant.util import Throttle
 from homeassistant.const import (
     CONF_NAME,
     CONF_PASSWORD,
@@ -34,8 +32,25 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     }
 )
 
-MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=120 + random.uniform(10, 20))
 
+class DynamicThrottler:
+    def __init__(self, timeout):
+        self.timeout = timeout
+        self.last_execution = 0
+
+    async def execute_with_throttle(self, method):
+        current_time = asyncio.get_event_loop().time()
+
+        if current_time - self.last_execution >= self.timeout:
+            # If timeout period has elapsed, execute the method
+            self.last_execution = current_time
+            return await method()
+        else:
+            # If within the timeout period, return None
+            return None
+        
+    def update_timeout(self, new_timeout):
+        self.timeout = new_timeout
 
 def seconds_in_month(year, month):
     # Get the number of days in the given month
@@ -51,6 +66,7 @@ async def dry_setup(hass, config_entry, async_add_devices):
     username = config.get(CONF_USERNAME)
     password = config.get(CONF_PASSWORD)
     country = config.get("country")
+    data_refresh_timeout = config.get("data_refresh_timeout", 120 + random.uniform(10, 20))
     if not country or country == "":
         country = "BE"
 
@@ -61,7 +77,7 @@ async def dry_setup(hass, config_entry, async_add_devices):
         username,
         password,
         country,
-        async_get_clientsession(hass),
+        data_refresh_timeout,
         hass
     )
     await componentData._forced_update()
@@ -92,7 +108,7 @@ async def async_setup_platform(
 ):
     """Setup sensor platform for the ui"""
     _LOGGER.info("async_setup_platform " + NAME)
-    await dry_setup(hass, config_entry, async_add_devices)
+    # await dry_setup(hass, config_entry, async_add_devices)
     return True
 
 
@@ -114,18 +130,21 @@ async def async_remove_entry(hass, config_entry):
         
 
 class ComponentData:
-    def __init__(self, username, password, country, client, hass):
+    def __init__(self, username, password, country, data_refresh_timeout, hass):
         self._username = username
         self._password = password
         self._country = country
-        self._client = client
+        self._data_refresh_timeout = data_refresh_timeout
+        self._hass = hass
         self._session = ComponentSession(self._country)
         self._user_details = None
         self._usage_details = None
         self._subscription_details = None
-        self._hass = hass
         self._lastupdate = None
         self._msisdn = None
+
+        
+        self._throttler = DynamicThrottler(data_refresh_timeout * 60)
         
     # same as update, but without throttle to make sure init is always executed
     async def _forced_update(self):
@@ -144,11 +163,12 @@ class ComponentData:
             _LOGGER.debug(f"{NAME} init subscription_details data: {self._subscription_details}")
             self._lastupdate = datetime.now()
                 
-    @Throttle(MIN_TIME_BETWEEN_UPDATES)
     async def _update(self):
-        await self._forced_update()
+        await self._throttler.execute_with_throttle(self._forced_update)
+        # await self._forced_update()
 
     async def update(self):
+        _LOGGER.debug("Updating " + NAME)
         await self._update()
     
     def clear_session(self):
