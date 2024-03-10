@@ -11,8 +11,8 @@
 
 This integration is in no way affiliated with Youfone. 
 
-| :warning: Please don't report issues with this integration to YouFone, they will not be able to support you.** |
-| ----------------------------------------------------------------------------------------------------------------------|
+| :warning: Please don't report issues with this integration to YouFone, they will not be able to support you. |
+| -------------------------------------------------------------------------------------------------------------|
 
 Some discussion on this topic can be found within [the Home Assistant community forum](https://community.home-assistant.io/t/youfone-be-custom-integration/520952).
 
