@@ -9,7 +9,10 @@
 # Youfone Home Assistant integration
 [Youfone](https://www.youfone.be/) Home Assistant custom component. This custom component has been built from the ground up to bring your Youfone mobile phone usage details into Home Assistant to help you towards a better follow up on your usage information. This integration is built against the public website provided by Youfone Belgium and Netherlands. Support is provided for mulitple sim cards (phone numbers) within one account subscription.
 
-This integration is in no way affiliated with Youfone. **Please don't report issues with this integration to Youfone, they will not be able to support you.**
+This integration is in no way affiliated with Youfone. 
+
+| :warning: Please don't report issues with this integration to YouFone, they will not be able to support you.** |
+| ----------------------------------------------------------------------------------------------------------------------|
 
 Some discussion on this topic can be found within [the Home Assistant community forum](https://community.home-assistant.io/t/youfone-be-custom-integration/520952).
 
