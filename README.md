@@ -6,12 +6,14 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/myTselection/youfone_be.svg)](https://github.com/myTselection/youfone_be/commits/master)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/myTselection/youfone_be.svg)](https://github.com/myTselection/youfone_be/graphs/commit-activity)
 
-# Youfone Home Assistant integration
-[Youfone](https://www.youfone.be/) Home Assistant custom component. This custom component has been built from the ground up to bring your Youfone mobile phone usage details into Home Assistant to help you towards a better follow up on your usage information. This integration is built against the public website provided by Youfone Belgium and Netherlands. Support is provided for mulitple sim cards (phone numbers) within one account subscription.
+# Yoin Youfone Home Assistant integration
+[Yoin (aka Youfone)](https://www.yoin.be/) Home Assistant custom component. This custom component has been built from the ground up to bring your Youfone mobile phone usage details into Home Assistant to help you towards a better follow up on your usage information. This integration is built against the public website provided by Yoin / Youfone Belgium and Netherlands. Support is provided for multiple sim cards (phone numbers) within one account subscription.
 
-This integration is in no way affiliated with Youfone. 
+This integration is in no way affiliated with Yoin/Youfone. 
 
-| :warning: Please don't report issues with this integration to YouFone, they will not be able to support you. |
+As of April 2024, Youfone.be was renamed to Yoin.be. Youfone.nl remained. The integration had been updated to use yoin.be site to retrieve account info, yet the sensor names have not been changes as this may impact all dashboards and HA automations or services.
+
+| :warning: Please don't report issues with this integration to Yoin/YouFone, they will not be able to support you. |
 | -------------------------------------------------------------------------------------------------------------|
 
 Some discussion on this topic can be found within [the Home Assistant community forum](https://community.home-assistant.io/t/youfone-be-custom-integration/520952).
@@ -20,10 +22,10 @@ Some discussion on this topic can be found within [the Home Assistant community 
 
 
 ## Installation
-- [HACS](https://hacs.xyz/): HACS > Integration > search for Youfone and install
+- [HACS](https://hacs.xyz/): HACS > Integration > search for 'Yoin.be Youfone.nl' and install
     - [![Open your Home Assistant instance and open the repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg?style=flat-square)](https://my.home-assistant.io/redirect/hacs_repository/?owner=myTselection&repository=youfone_be&category=integration)
 - Restart Home Assistant
-- Add 'Youfone.be' integration via HA Settings > 'Devices and Services' > 'Integrations'
+- Add 'Youfone' integration via HA Settings > 'Devices and Services' > 'Integrations'
 - Provide Youfone.be username and password and country (BE or NL)
 
 ## Integration
@@ -122,7 +124,7 @@ card:
       content: >-
         ## <img
         src="https://raw.githubusercontent.com/myTselection/youfone_be/master/icon.png"
-        width="30"/>&nbsp;&nbsp;Youfone <Name>
+        width="30"/>&nbsp;&nbsp;Yoin Youfone <Name>
         ({{state_attr('sensor.youfone_<phonenr>_voice_sms','phone_number') |
         replace('32','0')}})
 

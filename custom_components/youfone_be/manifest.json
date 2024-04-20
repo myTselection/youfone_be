@@ -10,6 +10,6 @@
   "integration_type": "hub",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/myTselection/youfone_be/issues",
-  "requirements": [],
-  "version": "4.5.0"
+  "requirements": ["httpx"],
+  "version": "5.0.0"
 }

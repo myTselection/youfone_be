@@ -1,18 +1,18 @@
 {
     "config": {
-        "title": "Youfone.be",
+        "title": "Yoin Youfone",
         "step": {
             "user": {
-                "title": "Youfone.be",
-                "description": "Setup a Youfone.be sensor, username and password are required.",
+                "title": "Yoin Youfone",
+                "description": "Setup a Yoin Youfone sensor, username and password are required.",
                 "data": {
                     "username": "Username",
                     "password": "Password"
                 }
             },
             "edit": {
-                "title": "Youfone.be",
-                "description": "Setup a Youfone.be sensor, username and password are required.",
+                "title": "Yoin Youfone",
+                "description": "Setup a Yoin Youfone sensor, username and password are required.",
                 "data": {
                     "username": "Username",
                     "password": "Password"
@@ -30,8 +30,8 @@
     "options": {
         "step": {
             "edit": {
-                "title": "Youfone.be",
-                "description": "Setup a Youfone.be sensor, username and password are required.",
+                "title": "Yoin Youfone",
+                "description": "Setup a Yoin Youfone sensor, username and password are required.",
                 "data": {
                     "username": "Username",
                     "password": "Password"
