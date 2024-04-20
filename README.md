@@ -11,7 +11,7 @@
 
 This integration is in no way affiliated with Yoin/Youfone. 
 
-As of April 2024, Youfone.be was renamed to Yoin.be. Youfone.nl remained. The integration had been updated to use yoin.be site to retrieve account info, yet the sensor names have not been changes as this may impact all dashboards and HA automations or services.
+As of April 2024, Youfone.be was renamed to Yoin.be. Youfone.nl remained. The integration had been updated to use my.yoin.be or my.youfone.nl site to retrieve account info, yet the sensor names have not been changes as this may impact all dashboards and HA automations or services.
 
 | :warning: Please don't report issues with this integration to Yoin/YouFone, they will not be able to support you. |
 | -------------------------------------------------------------------------------------------------------------|
