@@ -11,7 +11,8 @@ import time
 import random
 
 import voluptuous as vol
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
+# from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.httpx_client import get_async_client
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -54,7 +55,7 @@ class ComponentSession(object):
         self.loginSecurityKey = ""
 
     def initSession(self):
-        self.s = httpx.Client(http2=True)
+        self.s = get_async_client(http2=True)
         self.s.headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
         self.s.headers["Referer"] = f"https://my.{self._domain}/login"
         self.s.headers["Origin"] = f"https://my.{self._domain}"
