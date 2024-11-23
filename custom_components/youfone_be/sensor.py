@@ -136,7 +136,7 @@ class ComponentData:
         self._country = country
         self._data_refresh_timeout = data_refresh_timeout
         self._hass = hass
-        self._session = ComponentSession(self._country, self._hass)
+        self._session = ComponentSession(self._country)
         self._user_details = None
         self._usage_details = None
         self._subscription_details = None
@@ -150,16 +150,16 @@ class ComponentData:
     async def _forced_update(self):
         _LOGGER.info("Fetching init stuff for " + NAME)
         if not(self._session):
-            self._session = ComponentSession(self._country,self._hass)
+            self._session = ComponentSession(self._country)
 
         if self._session:
-            self._user_details = await self._session.login(self._username, self._password)
+            self._user_details = await self._hass.async_add_executor_job(lambda: self._session.login(self._username, self._password))
             _LOGGER.info(f"{NAME} init login completed")
             self._msisdn = self._session.msisdn
             _LOGGER.debug(f"{NAME} init login _msisdn = {self._msisdn}")
-            self._usage_details = await self._session.usage_details()
+            self._usage_details = await self._hass.async_add_executor_job(lambda: self._session.usage_details())
             _LOGGER.debug(f"{NAME} init usage_details data: {self._usage_details}")
-            self._subscription_details = await self._session.subscription_details()
+            self._subscription_details = await self._hass.async_add_executor_job(lambda: self._session.subscription_details())
             _LOGGER.debug(f"{NAME} init subscription_details data: {self._subscription_details}")
             self._lastupdate = datetime.now()
                 
