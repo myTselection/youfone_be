@@ -6,7 +6,10 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/myTselection/youfone_be.svg)](https://github.com/myTselection/youfone_be/commits/master)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/myTselection/youfone_be.svg)](https://github.com/myTselection/youfone_be/graphs/commit-activity)
 
-# Yoin Youfone Home Assistant integration
+# DISCONTINUED ! Yoin Youfone Home Assistant integration
+:warning:As of 2025, I'm no longer a Yoin customer (moved to [Digi Mobile]([url](https://www.digi-belgium.be/nl)) and [Jim Mobile]([url](https://jimmobile.be/nl/))). As such, I don't plan to actively maintain this repo. Please look into some well maintained alternatives: https://github.com/geertmeersman/yoin
+
+
 [Yoin (aka Youfone)](https://www.yoin.be/) Home Assistant custom component. This custom component has been built from the ground up to bring your Youfone mobile phone usage details into Home Assistant to help you towards a better follow up on your usage information. This integration is built against the public website provided by Yoin / Youfone Belgium and Netherlands. Support is provided for multiple sim cards (phone numbers) within one account subscription.
 
 This integration is in no way affiliated with Yoin/Youfone. 
